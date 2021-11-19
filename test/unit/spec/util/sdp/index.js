@@ -921,7 +921,7 @@ a=rtpmap:126 telephone-event/8000\r
     context(`when audio mids are ${midsCsv ? '' : 'not '}specified`, () => {
       const mids = midsCsv ? midsCsv.split(',') : [];
       const dtxMids = mids.length > 0 ? mids : ['0', '2'];
-  
+
       it(`should enable opus DTX for ${mids.length > 0 ? 'the specified audio mids' : 'all the audio mids'}`, () => {
         const sdp1 = mids.length > 0 ? enableDtxForOpus(sdp, mids) : enableDtxForOpus(sdp);
         const mediaSections = getMediaSections(sdp);
