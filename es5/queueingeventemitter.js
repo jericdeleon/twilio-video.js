@@ -30,10 +30,14 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-var __spreadArray = (this && this.__spreadArray) || function (to, from) {
-    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
-        to[j] = from[i];
-    return to;
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
 var EventEmitter = require('events').EventEmitter;
 /**
@@ -74,7 +78,7 @@ var QueueingEventEmitter = /** @class */ (function (_super) {
         }
         var queue = this._queuedEvents.get(event) || [];
         this._queuedEvents.delete(event);
-        return queue.reduce(function (result, args) { return _this.emit.apply(_this, __spreadArray([], __read([event].concat(args)))) && result; }, result);
+        return queue.reduce(function (result, args) { return _this.emit.apply(_this, __spreadArray([], __read([event].concat(args)), false)) && result; }, result);
     };
     /**
      * If the event has listeners, emit the event; otherwise, queue the event.
@@ -84,7 +88,7 @@ var QueueingEventEmitter = /** @class */ (function (_super) {
      */
     QueueingEventEmitter.prototype.queue = function () {
         var args = [].slice.call(arguments);
-        if (this.emit.apply(this, __spreadArray([], __read(args)))) {
+        if (this.emit.apply(this, __spreadArray([], __read(args), false))) {
             return true;
         }
         var event = args[0];

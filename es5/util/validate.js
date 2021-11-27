@@ -84,13 +84,13 @@ function validateObject(object, name, propChecks) {
         }
         var value = object[prop];
         if (type && typeof value !== type) {
-            return E.INVALID_TYPE(name + "." + prop, type);
+            return E.INVALID_TYPE("".concat(name, ".").concat(prop), type);
         }
         if (type === 'number' && isNaN(value)) {
-            return E.INVALID_TYPE(name + "." + prop, type);
+            return E.INVALID_TYPE("".concat(name, ".").concat(prop), type);
         }
         if (Array.isArray(values) && !values.includes(value)) {
-            return E.INVALID_VALUE(name + "." + prop, values);
+            return E.INVALID_VALUE("".concat(name, ".").concat(prop), values);
         }
         return error;
     }, null);
@@ -104,7 +104,7 @@ function validateRenderDimensions(renderDimensions) {
     var name = 'options.bandwidthProfile.video.renderDimensions';
     var error = validateObject(renderDimensions, name);
     return renderDimensions ? error || Object.values(trackPriority).reduce(function (error, prop) {
-        return error || validateObject(renderDimensions[prop], name + "." + prop, [
+        return error || validateObject(renderDimensions[prop], "".concat(name, ".").concat(prop), [
             { prop: 'height', type: 'number' },
             { prop: 'width', type: 'number' }
         ]);

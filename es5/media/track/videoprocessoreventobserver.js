@@ -86,7 +86,7 @@ var VideoProcessorEventObserver = /** @class */ (function (_super) {
         var data = { captureHeight: captureHeight, captureWidth: captureWidth, inputFrameRate: inputFrameRate, isRemoteVideoTrack: isRemoteVideoTrack };
         data.name = processor._name || 'VideoProcessor';
         ['assetsPath', 'blurFilterRadius', 'fitType', 'isSimdEnabled', 'maskBlurRadius', 'version'].forEach(function (prop) {
-            var val = processor["_" + prop];
+            var val = processor["_".concat(prop)];
             if (typeof val !== 'undefined') {
                 data[prop] = val;
             }
@@ -145,7 +145,7 @@ var VideoProcessorEventObserver = /** @class */ (function (_super) {
      * @private
      */
     VideoProcessorEventObserver.prototype._reemitEvent = function (name, data) {
-        this._log.debug("VideoProcessor:" + name, data);
+        this._log.debug("VideoProcessor:".concat(name), data);
         this.emit('event', { name: name, data: data });
     };
     return VideoProcessorEventObserver;

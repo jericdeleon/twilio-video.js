@@ -37,7 +37,7 @@ var LocalAudioTrackPublication = /** @class */ (function (_super) {
         return _super.call(this, signaling, track, unpublish, options) || this;
     }
     LocalAudioTrackPublication.prototype.toString = function () {
-        return "[LocalAudioTrackPublication #" + this._instanceId + ": " + this.trackSid + "]";
+        return "[LocalAudioTrackPublication #".concat(this._instanceId, ": ").concat(this.trackSid, "]");
     };
     return LocalAudioTrackPublication;
 }(LocalTrackPublication));

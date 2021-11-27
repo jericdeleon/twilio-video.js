@@ -37,7 +37,7 @@ var LocalVideoTrackPublication = /** @class */ (function (_super) {
         return _super.call(this, signaling, track, unpublish, options) || this;
     }
     LocalVideoTrackPublication.prototype.toString = function () {
-        return "[LocalVideoTrackPublication #" + this._instanceId + ": " + this.trackSid + "]";
+        return "[LocalVideoTrackPublication #".concat(this._instanceId, ": ").concat(this.trackSid, "]");
     };
     return LocalVideoTrackPublication;
 }(LocalTrackPublication));

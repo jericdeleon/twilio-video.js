@@ -141,7 +141,7 @@ var PreflightTest = /** @class */ (function (_super) {
         return _this;
     }
     PreflightTest.prototype.toString = function () {
-        return "[Preflight #" + this._instanceId + "]";
+        return "[Preflight #".concat(this._instanceId, "]");
     };
     /**
      * stops ongoing tests and emits error
@@ -161,9 +161,9 @@ var PreflightTest = /** @class */ (function (_super) {
                 media: this._mediaTiming.getTimeMeasurement()
             },
             stats: {
-                jitter: makestat_1.makeStat(collectedStats.jitter),
-                rtt: makestat_1.makeStat(collectedStats.rtt),
-                packetLoss: makestat_1.makeStat(collectedStats.packetLoss),
+                jitter: (0, makestat_1.makeStat)(collectedStats.jitter),
+                rtt: (0, makestat_1.makeStat)(collectedStats.rtt),
+                packetLoss: (0, makestat_1.makeStat)(collectedStats.packetLoss),
             },
             selectedIceCandidatePairStats: collectedStats.selectedIceCandidatePairStats,
             iceCandidateStats: collectedStats.iceCandidateStats
@@ -184,7 +184,7 @@ var PreflightTest = /** @class */ (function (_super) {
                         timer = null;
                         timeoutPromise = new Promise(function (_resolve, reject) {
                             timer = setTimeout(function () {
-                                reject(new Error("Timed out waiting for : " + stepName));
+                                reject(new Error("Timed out waiting for : ".concat(stepName)));
                             }, MAX_STEP_DURATION);
                         });
                         _a.label = 1;
@@ -254,13 +254,13 @@ var PreflightTest = /** @class */ (function (_super) {
                     case 1:
                         _a.trys.push([1, 8, 9, 10]);
                         elements_1 = [];
-                        return [4 /*yield*/, this._executePreflightStep('Acquire media', function () { return [syntheticaudio_1.syntheticAudio(), syntheticvideo_1.syntheticVideo({ width: 640, height: 480 })]; })];
+                        return [4 /*yield*/, this._executePreflightStep('Acquire media', function () { return [(0, syntheticaudio_1.syntheticAudio)(), (0, syntheticvideo_1.syntheticVideo)({ width: 640, height: 480 })]; })];
                     case 2:
                         localTracks = _a.sent();
                         this.emit('progress', PreflightProgress.mediaAcquired);
                         this.emit('debug', { localTracks: localTracks });
                         this._connectTiming.start();
-                        return [4 /*yield*/, this._executePreflightStep('Get turn credentials', function () { return getturncredentials_1.getTurnCredentials(token, options); })];
+                        return [4 /*yield*/, this._executePreflightStep('Get turn credentials', function () { return (0, getturncredentials_1.getTurnCredentials)(token, options); })];
                     case 3:
                         iceServers = _a.sent();
                         this._connectTiming.stop();
@@ -363,7 +363,7 @@ var PreflightTest = /** @class */ (function (_super) {
             var combinedStats, timestamp, bytesSent, bytesReceived, packets, packetsLost, roundTripTime, jitter, selectedIceCandidatePairStats, iceCandidateStats, hasLastData, fractionPacketLost, percentPacketsLost, score;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, getCombinedConnectionStats_1.getCombinedConnectionStats({ publisher: senderPC, subscriber: receiverPC })];
+                    case 0: return [4 /*yield*/, (0, getCombinedConnectionStats_1.getCombinedConnectionStats)({ publisher: senderPC, subscriber: receiverPC })];
                     case 1:
                         combinedStats = _a.sent();
                         timestamp = combinedStats.timestamp, bytesSent = combinedStats.bytesSent, bytesReceived = combinedStats.bytesReceived, packets = combinedStats.packets, packetsLost = combinedStats.packetsLost, roundTripTime = combinedStats.roundTripTime, jitter = combinedStats.jitter, selectedIceCandidatePairStats = combinedStats.selectedIceCandidatePairStats, iceCandidateStats = combinedStats.iceCandidateStats;
@@ -380,7 +380,7 @@ var PreflightTest = /** @class */ (function (_super) {
                             fractionPacketLost = this._packetLossMovingAverage.get();
                             percentPacketsLost = Math.min(100, fractionPacketLost * 100);
                             collectedStats.packetLoss.push(percentPacketsLost);
-                            score = mos_1.calculateMOS(roundTripTime, jitter, fractionPacketLost);
+                            score = (0, mos_1.calculateMOS)(roundTripTime, jitter, fractionPacketLost);
                             collectedStats.mos.push(score);
                         }
                         if (!collectedStats.selectedIceCandidatePairStats) {
@@ -402,7 +402,7 @@ var PreflightTest = /** @class */ (function (_super) {
                     case 0:
                         startTime = Date.now();
                         STAT_INTERVAL = Math.min(1000, duration);
-                        return [4 /*yield*/, util_1.waitForSometime(STAT_INTERVAL)];
+                        return [4 /*yield*/, (0, util_1.waitForSometime)(STAT_INTERVAL)];
                     case 1:
                         _a.sent();
                         return [4 /*yield*/, this._collectRTCStats(collectedStats, senderPC, receiverPC)];

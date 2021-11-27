@@ -27,7 +27,7 @@ var _a = require('../../util'), createBandwidthProfilePayload = _a.createBandwid
 var _b = require('../../util/twilio-video-errors'), createTwilioError = _b.createTwilioError, RoomCompletedError = _b.RoomCompletedError, SignalingConnectionError = _b.SignalingConnectionError, SignalingServerBusyError = _b.SignalingServerBusyError;
 var ICE_VERSION = 1;
 var RSP_VERSION = 2;
-var SDK_NAME = packageInfo.name + ".js";
+var SDK_NAME = "".concat(packageInfo.name, ".js");
 var SDK_VERSION = packageInfo.version;
 /*
 TwilioConnectionTransport States

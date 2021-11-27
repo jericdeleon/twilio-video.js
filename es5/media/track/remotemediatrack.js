@@ -30,10 +30,14 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-var __spreadArray = (this && this.__spreadArray) || function (to, from) {
-    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
-        to[j] = from[i];
-    return to;
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
 var _a = require('../../util/constants'), E = _a.typeErrors, trackPriority = _a.trackPriority;
 var guessBrowser = require('@twilio/webrtc/lib/util').guessBrowser;
@@ -139,7 +143,7 @@ function mixinRemoteMediaTrack(AudioOrVideoTrack) {
          * @throws {RangeError}
          */
         RemoteMediaTrack.prototype.setPriority = function (priority) {
-            var priorityValues = __spreadArray([null], __read(Object.values(trackPriority)));
+            var priorityValues = __spreadArray([null], __read(Object.values(trackPriority)), false);
             if (!priorityValues.includes(priority)) {
                 // eslint-disable-next-line new-cap
                 throw E.INVALID_VALUE('priority', priorityValues);
@@ -226,15 +230,15 @@ function playIfPausedWhileInBackground(remoteMediaTrack) {
             var shim = remoteMediaTrack._elShims.get(el);
             var isInadvertentlyPaused = el.paused && shim && !shim.pausedIntentionally();
             if (isInadvertentlyPaused) {
-                log.info("Playing inadvertently paused <" + kind + "> element");
+                log.info("Playing inadvertently paused <".concat(kind, "> element"));
                 log.debug('Element:', el);
                 log.debug('RemoteMediaTrack:', remoteMediaTrack);
                 el.play().then(function () {
-                    log.info("Successfully played inadvertently paused <" + kind + "> element");
+                    log.info("Successfully played inadvertently paused <".concat(kind, "> element"));
                     log.debug('Element:', el);
                     log.debug('RemoteMediaTrack:', remoteMediaTrack);
                 }).catch(function (err) {
-                    log.warn("Error while playing inadvertently paused <" + kind + "> element:", { err: err, el: el, remoteMediaTrack: remoteMediaTrack });
+                    log.warn("Error while playing inadvertently paused <".concat(kind, "> element:"), { err: err, el: el, remoteMediaTrack: remoteMediaTrack });
                 });
             }
         });

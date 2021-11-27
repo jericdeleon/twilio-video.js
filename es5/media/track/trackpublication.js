@@ -63,7 +63,7 @@ var TrackPublication = /** @class */ (function (_super) {
         return valueToJSON(this);
     };
     TrackPublication.prototype.toString = function () {
-        return "[TrackPublication #" + this._instanceId + ": " + this.trackSid + "]";
+        return "[TrackPublication #".concat(this._instanceId, ": ").concat(this.trackSid, "]");
     };
     return TrackPublication;
 }(EventEmitter));

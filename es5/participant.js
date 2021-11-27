@@ -30,10 +30,14 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-var __spreadArray = (this && this.__spreadArray) || function (to, from) {
-    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
-        to[j] = from[i];
-    return to;
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
 var EventEmitter = require('./eventemitter');
 var RemoteAudioTrack = require('./media/track/remoteaudiotrack');
@@ -207,7 +211,7 @@ var Participant = /** @class */ (function (_super) {
                 : null);
         });
         reemitSignalingStateChangedEvents(_this, signaling);
-        log.info("Created a new Participant" + (_this.identity ? ": " + _this.identity : ''));
+        log.info("Created a new Participant".concat(_this.identity ? ": ".concat(_this.identity) : ''));
         return _this;
     }
     /**
@@ -229,7 +233,7 @@ var Participant = /** @class */ (function (_super) {
         return [];
     };
     Participant.prototype.toString = function () {
-        return "[Participant #" + this._instanceId + ": " + this.sid + "]";
+        return "[Participant #".concat(this._instanceId, ": ").concat(this.sid, "]");
     };
     /**
      * @private
@@ -250,8 +254,8 @@ var Participant = /** @class */ (function (_super) {
         }[track.kind];
         tracksByKind.set(id, track);
         reemitTrackEvents(this, track, id);
-        log.info("Added a new " + util.trackClass(track) + ":", id);
-        log.debug(util.trackClass(track) + ":", track);
+        log.info("Added a new ".concat(util.trackClass(track), ":"), id);
+        log.debug("".concat(util.trackClass(track), ":"), track);
         return track;
     };
     /**
@@ -272,8 +276,8 @@ var Participant = /** @class */ (function (_super) {
         }[publication.kind];
         trackPublicationsByKind.set(publication.trackSid, publication);
         reemitTrackPublicationEvents(this, publication);
-        log.info("Added a new " + util.trackPublicationClass(publication) + ":", publication.trackSid);
-        log.debug(util.trackPublicationClass(publication) + ":", publication);
+        log.info("Added a new ".concat(util.trackPublicationClass(publication), ":"), publication.trackSid);
+        log.debug("".concat(util.trackPublicationClass(publication), ":"), publication);
         return publication;
     };
     /**
@@ -409,8 +413,8 @@ var Participant = /** @class */ (function (_super) {
             track.removeListener(event, reemitter);
         });
         var log = this._log;
-        log.info("Removed a " + util.trackClass(track) + ":", id);
-        log.debug(util.trackClass(track) + ":", track);
+        log.info("Removed a ".concat(util.trackClass(track), ":"), id);
+        log.debug("".concat(util.trackClass(track), ":"), track);
         return track;
     };
     /**
@@ -435,8 +439,8 @@ var Participant = /** @class */ (function (_super) {
             publication.removeListener(event, reemitter);
         });
         var log = this._log;
-        log.info("Removed a " + util.trackPublicationClass(publication) + ":", publication.trackSid);
-        log.debug(util.trackPublicationClass(publication) + ":", publication);
+        log.info("Removed a ".concat(util.trackPublicationClass(publication), ":"), publication.trackSid);
+        log.debug("".concat(util.trackPublicationClass(publication), ":"), publication);
         return publication;
     };
     Participant.prototype.toJSON = function () {
@@ -582,7 +586,7 @@ function reemitTrackEvents(participant, track, id) {
         var participantEvent = eventPair[1];
         trackEventReemitters.set(trackEvent, function () {
             var args = [participantEvent].concat([].slice.call(arguments));
-            return participant.emit.apply(participant, __spreadArray([], __read(args)));
+            return participant.emit.apply(participant, __spreadArray([], __read(args), false));
         });
         track.on(trackEvent, trackEventReemitters.get(trackEvent));
     });
@@ -606,7 +610,7 @@ function reemitTrackPublicationEvents(participant, publication) {
             for (var _i = 0; _i < arguments.length; _i++) {
                 args[_i] = arguments[_i];
             }
-            participant.emit.apply(participant, __spreadArray(__spreadArray([participantEvent], __read(args)), [publication]));
+            participant.emit.apply(participant, __spreadArray(__spreadArray([participantEvent], __read(args), false), [publication], false));
         });
         publication.on(publicationEvent, publicationEventReemitters.get(publicationEvent));
     });

@@ -253,7 +253,7 @@ var RoomV2 = /** @class */ (function (_super) {
         var initiallySwitchedOff = this._pendingSwitchOffStates.get(trackSid) || false;
         this._pendingSwitchOffStates.delete(trackSid);
         if (initiallySwitchedOff) {
-            this._log.warn("[" + trackSid + "] was initially switched off! ");
+            this._log.warn("[".concat(trackSid, "] was initially switched off! "));
         }
         return initiallySwitchedOff;
     };
@@ -425,7 +425,7 @@ var RoomV2 = /** @class */ (function (_super) {
                 tracksOff.forEach(function (trackSid) {
                     if (trackUpdates_1.get(trackSid)) {
                         // NOTE(mpatwardhan): This means that VIDEO-3762 has been reproduced.
-                        _this._log.warn(trackSid + " is DUPLICATED in both tracksOff and tracksOn list");
+                        _this._log.warn("".concat(trackSid, " is DUPLICATED in both tracksOff and tracksOn list"));
                     }
                     trackUpdates_1.set(trackSid, false);
                 });
@@ -662,7 +662,7 @@ function periodicallyPublishStats(roomV2, transport, intervalMs) {
                     'remoteVideoTrackStats'
                 ], function (prop) { return report[prop].map(function (_a) {
                     var ssrc = _a.ssrc, trackSid = _a.trackSid;
-                    return trackSid + "+" + ssrc;
+                    return "".concat(trackSid, "+").concat(ssrc);
                 }); });
                 var movingAverageDeltaKeysToBeRemoved = difference(Array.from(movingAverageDeltas.keys()), keys);
                 movingAverageDeltaKeysToBeRemoved.forEach(function (key) { return movingAverageDeltas.delete(key); });
@@ -712,7 +712,7 @@ function handleSubscriptions(room) {
 function addAVSyncMetricsToLocalTrackStats(trackStats, trackResponse, movingAverageDeltas) {
     var framesEncoded = trackResponse.framesEncoded, packetsSent = trackResponse.packetsSent, totalEncodeTime = trackResponse.totalEncodeTime, totalPacketSendDelay = trackResponse.totalPacketSendDelay;
     var augmentedTrackStats = Object.assign({}, trackStats);
-    var key = trackStats.trackSid + "+" + trackStats.ssrc;
+    var key = "".concat(trackStats.trackSid, "+").concat(trackStats.ssrc);
     var trackMovingAverageDeltas = movingAverageDeltas.get(key) || new Map();
     if (typeof totalEncodeTime === 'number' && typeof framesEncoded === 'number') {
         var trackAvgEncodeDelayMovingAverageDelta = trackMovingAverageDeltas.get('avgEncodeDelay')
@@ -739,7 +739,7 @@ function addAVSyncMetricsToLocalTrackStats(trackStats, trackResponse, movingAver
 function addAVSyncMetricsToRemoteTrackStats(trackStats, trackResponse, movingAverageDeltas) {
     var estimatedPlayoutTimestamp = trackResponse.estimatedPlayoutTimestamp, framesDecoded = trackResponse.framesDecoded, jitterBufferDelay = trackResponse.jitterBufferDelay, jitterBufferEmittedCount = trackResponse.jitterBufferEmittedCount, totalDecodeTime = trackResponse.totalDecodeTime;
     var augmentedTrackStats = Object.assign({}, trackStats);
-    var key = trackStats.trackSid + "+" + trackStats.ssrc;
+    var key = "".concat(trackStats.trackSid, "+").concat(trackStats.ssrc);
     var trackMovingAverageDeltas = movingAverageDeltas.get(key) || new Map();
     if (typeof estimatedPlayoutTimestamp === 'number') {
         augmentedTrackStats.estimatedPlayoutTimestamp = estimatedPlayoutTimestamp;

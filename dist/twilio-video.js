@@ -258,7 +258,7 @@ function connect(token, options) {
     var loggerName = options.loggerName || DEFAULT_LOGGER_NAME;
     var logLevel = options.logLevel || DEFAULT_LOG_LEVEL;
     var logLevels = buildLogLevels(logLevel);
-    var logComponentName = "[connect #" + ++connectCalls + "]";
+    var logComponentName = "[connect #".concat(++connectCalls, "]");
     var log;
     try {
         log = new Log('default', logComponentName, logLevels, loggerName);
@@ -887,8 +887,8 @@ function deprecateOptions(options, log, deprecationTable) {
                 delete options[name];
             }
             if (!didWarn && !['error', 'off'].includes(log.level)) {
-                log.warn("The ConnectOptions \"" + name + "\" is " + (newName
-                    ? "deprecated and scheduled for removal. Please use \"" + newName + "\" instead."
+                log.warn("The ConnectOptions \"".concat(name, "\" is ").concat(newName
+                    ? "deprecated and scheduled for removal. Please use \"".concat(newName, "\" instead.")
                     : 'no longer applicable and will be ignored.'));
                 prop.didWarn = true;
             }
@@ -1158,7 +1158,7 @@ function createLocalTracks(options) {
         Log: Log,
         video: isAudioVideoAbsent
     }, options);
-    var logComponentName = "[createLocalTracks #" + ++createLocalTrackCalls + "]";
+    var logComponentName = "[createLocalTracks #".concat(++createLocalTrackCalls, "]");
     var logLevels = buildLogLevels(options.logLevel);
     var log = new options.Log('default', logComponentName, logLevels, options.loggerName);
     // NOTE(mmalavalli): The Room "name" in "options" was being used
@@ -1889,8 +1889,8 @@ var LocalParticipant = /** @class */ (function (_super) {
      */
     LocalParticipant.prototype._addLocalTrack = function (track, priority) {
         this._signaling.addTrack(track._trackSender, track.name, priority);
-        this._log.info("Added a new " + trackClass(track, true) + ":", track.id);
-        this._log.debug(trackClass(track, true) + ":", track);
+        this._log.info("Added a new ".concat(trackClass(track, true), ":"), track.id);
+        this._log.debug("".concat(trackClass(track, true), ":"), track);
     };
     /**
      * @private
@@ -1902,8 +1902,8 @@ var LocalParticipant = /** @class */ (function (_super) {
         var removedTrack = _super.prototype._removeTrack.call(this, track, id);
         if (removedTrack && this.state !== 'disconnected') {
             this._signaling.removeTrack(track._trackSender);
-            this._log.info("Removed a " + trackClass(track, true) + ":", track.id);
-            this._log.debug(trackClass(track, true) + ":", track);
+            this._log.info("Removed a ".concat(trackClass(track, true), ":"), track.id);
+            this._log.debug("".concat(trackClass(track, true), ":"), track);
         }
         return removedTrack;
     };
@@ -1920,7 +1920,7 @@ var LocalParticipant = /** @class */ (function (_super) {
         ]);
     };
     LocalParticipant.prototype.toString = function () {
-        return "[LocalParticipant #" + this._instanceId + (this.sid ? ": " + this.sid : '') + "]";
+        return "[LocalParticipant #".concat(this._instanceId).concat(this.sid ? ": ".concat(this.sid) : '', "]");
     };
     /**
      * @private
@@ -1936,14 +1936,14 @@ var LocalParticipant = /** @class */ (function (_super) {
             var trackSignaling = signaling.getPublication(localTrack._trackSender);
             if (trackSignaling) {
                 trackSignaling.disable();
-                log.debug("Disabled the " + trackClass(localTrack, true) + ":", localTrack.id);
+                log.debug("Disabled the ".concat(trackClass(localTrack, true), ":"), localTrack.id);
             }
         }
         function localTrackEnabled(localTrack) {
             var trackSignaling = signaling.getPublication(localTrack._trackSender);
             if (trackSignaling) {
                 trackSignaling.enable();
-                log.debug("Enabled the " + trackClass(localTrack, true) + ":", localTrack.id);
+                log.debug("Enabled the ".concat(trackClass(localTrack, true), ":"), localTrack.id);
             }
         }
         function localTrackStopped(localTrack) {
@@ -1962,7 +1962,7 @@ var LocalParticipant = /** @class */ (function (_super) {
             _this._addLocalTrack(track, trackPriority.PRIORITY_STANDARD);
             _this._getOrCreateLocalTrackPublication(track).catch(function (error) {
                 // Just log a warning for now.
-                log.warn("Failed to get or create LocalTrackPublication for " + track + ":", error);
+                log.warn("Failed to get or create LocalTrackPublication for ".concat(track, ":"), error);
             });
         });
         var self = this;
@@ -1982,7 +1982,7 @@ var LocalParticipant = /** @class */ (function (_super) {
                         track._trackSender.removeClone(trackSignaling._trackTransceiver);
                     }
                 });
-                log.info("LocalParticipant disconnected. Stopping " + self._tracksToStop.size + " automatically-acquired LocalTracks");
+                log.info("LocalParticipant disconnected. Stopping ".concat(self._tracksToStop.size, " automatically-acquired LocalTracks"));
                 self._tracksToStop.forEach(function (track) {
                     track.stop();
                 });
@@ -2012,7 +2012,7 @@ var LocalParticipant = /** @class */ (function (_super) {
         var self = this;
         var trackSignaling = this._signaling.getPublication(localTrack._trackSender);
         if (!trackSignaling) {
-            return Promise.reject(new Error("Unexpected error: The " + localTrack + " cannot be published"));
+            return Promise.reject(new Error("Unexpected error: The ".concat(localTrack, " cannot be published")));
         }
         function unpublish(publication) {
             self.unpublishTrack(publication.track);
@@ -2022,7 +2022,7 @@ var LocalParticipant = /** @class */ (function (_super) {
                 var error = trackSignaling.error;
                 if (error) {
                     trackSignaling.removeListener('updated', updated);
-                    log.warn("Failed to publish the " + trackClass(localTrack, true) + ": " + error.message);
+                    log.warn("Failed to publish the ".concat(trackClass(localTrack, true), ": ").concat(error.message));
                     self._removeTrack(localTrack, localTrack.id);
                     setTimeout(function () {
                         self.emit('trackPublicationFailed', error, localTrack);
@@ -2032,7 +2032,7 @@ var LocalParticipant = /** @class */ (function (_super) {
                 }
                 if (!self._tracks.has(localTrack.id)) {
                     trackSignaling.removeListener('updated', updated);
-                    reject(new Error("The " + localTrack + " was unpublished"));
+                    reject(new Error("The ".concat(localTrack, " was unpublished")));
                     return;
                 }
                 var sid = trackSignaling.sid;
@@ -2234,7 +2234,7 @@ var LocalParticipant = /** @class */ (function (_super) {
         ['local', 'remote'].forEach(function (prop) {
             if (prop in networkQualityConfiguration && (typeof networkQualityConfiguration[prop] !== 'number' || isNaN(networkQualityConfiguration[prop]))) {
                 // eslint-disable-next-line new-cap
-                throw E.INVALID_TYPE("networkQualityConfiguration." + prop, 'number');
+                throw E.INVALID_TYPE("networkQualityConfiguration.".concat(prop), 'number');
             }
         });
         this._signaling.setNetworkQualityConfiguration(networkQualityConfiguration);
@@ -2260,7 +2260,7 @@ var LocalParticipant = /** @class */ (function (_super) {
                     && typeof encodingParameters[prop] !== 'number'
                     && encodingParameters[prop] !== null) {
                     // eslint-disable-next-line new-cap
-                    throw E.INVALID_TYPE("encodingParameters." + prop, 'number, null or undefined');
+                    throw E.INVALID_TYPE("encodingParameters.".concat(prop), 'number, null or undefined');
                 }
             });
         }
@@ -2293,7 +2293,7 @@ var LocalParticipant = /** @class */ (function (_super) {
             return null;
         }
         var trackSignaling = this._signaling.getPublication(localTrack._trackSender);
-        trackSignaling.publishFailed(new Error("The " + localTrack + " was unpublished"));
+        trackSignaling.publishFailed(new Error("The ".concat(localTrack, " was unpublished")));
         localTrack = this._removeTrack(localTrack, localTrack.id);
         if (!localTrack) {
             return null;
@@ -2805,7 +2805,7 @@ var LocalAudioTrack = /** @class */ (function (_super) {
         return _super.call(this, mediaStreamTrack, options) || this;
     }
     LocalAudioTrack.prototype.toString = function () {
-        return "[LocalAudioTrack #" + this._instanceId + ": " + this.id + "]";
+        return "[LocalAudioTrack #".concat(this._instanceId, ": ").concat(this.id, "]");
     };
     LocalAudioTrack.prototype.attach = function (el) {
         el = _super.prototype.attach.call(this, el);
@@ -2956,7 +2956,7 @@ var LocalAudioTrackPublication = /** @class */ (function (_super) {
         return _super.call(this, signaling, track, unpublish, options) || this;
     }
     LocalAudioTrackPublication.prototype.toString = function () {
-        return "[LocalAudioTrackPublication #" + this._instanceId + ": " + this.trackSid + "]";
+        return "[LocalAudioTrackPublication #".concat(this._instanceId, ": ").concat(this.trackSid, "]");
     };
     return LocalAudioTrackPublication;
 }(LocalTrackPublication));
@@ -3140,7 +3140,7 @@ var LocalDataTrackPublication = /** @class */ (function (_super) {
         return _super.call(this, signaling, track, unpublish, options) || this;
     }
     LocalDataTrackPublication.prototype.toString = function () {
-        return "[LocalDataTrackPublication #" + this._instanceId + ": " + this.trackSid + "]";
+        return "[LocalDataTrackPublication #".concat(this._instanceId, ": ").concat(this.trackSid, "]");
     };
     return LocalDataTrackPublication;
 }(LocalTrackPublication));
@@ -3355,7 +3355,7 @@ function mixinLocalMediaTrack(AudioOrVideoTrack) {
         LocalMediaTrack.prototype.enable = function (enabled) {
             enabled = typeof enabled === 'boolean' ? enabled : true;
             if (enabled !== this.mediaStreamTrack.enabled) {
-                this._log.info((enabled ? 'En' : 'Dis') + "abling");
+                this._log.info("".concat(enabled ? 'En' : 'Dis', "abling"));
                 this.mediaStreamTrack.enabled = enabled;
                 this.emit(enabled ? 'enabled' : 'disabled', this);
             }
@@ -3366,11 +3366,13 @@ function mixinLocalMediaTrack(AudioOrVideoTrack) {
         };
         LocalMediaTrack.prototype.restart = function (constraints) {
             var _this = this;
+            // eslint-disable-next-line
+            console.warn('custom log in restart!');
             var kind = this.kind;
             if (!this._isCreatedByCreateLocalTracks) {
                 return Promise.reject(ILLEGAL_INVOKE('restart', 'can only be called on a'
-                    + (" Local" + capitalize(kind) + "Track that is created using createLocalTracks")
-                    + (" or createLocal" + capitalize(kind) + "Track.")));
+                    + " Local".concat(capitalize(kind), "Track that is created using createLocalTracks")
+                    + " or createLocal".concat(capitalize(kind), "Track.")));
             }
             if (this._workaroundWebKitBug1208516Cleanup) {
                 this._workaroundWebKitBug1208516Cleanup();
@@ -3581,7 +3583,7 @@ var LocalTrackPublication = /** @class */ (function (_super) {
         return _this;
     }
     LocalTrackPublication.prototype.toString = function () {
-        return "[LocalTrackPublication #" + this._instanceId + ": " + this.trackSid + "]";
+        return "[LocalTrackPublication #".concat(this._instanceId, ": ").concat(this.trackSid, "]");
     };
     /**
      * Update the {@link Track.Priority} of the published {@link LocalTrack}.
@@ -3685,7 +3687,7 @@ var LocalVideoTrack = /** @class */ (function (_super) {
         return _this;
     }
     LocalVideoTrack.prototype.toString = function () {
-        return "[LocalVideoTrack #" + this._instanceId + ": " + this.id + "]";
+        return "[LocalVideoTrack #".concat(this._instanceId, ": ").concat(this.id, "]");
     };
     /**
      * @private
@@ -3998,7 +4000,7 @@ var LocalVideoTrackPublication = /** @class */ (function (_super) {
         return _super.call(this, signaling, track, unpublish, options) || this;
     }
     LocalVideoTrackPublication.prototype.toString = function () {
-        return "[LocalVideoTrackPublication #" + this._instanceId + ": " + this.trackSid + "]";
+        return "[LocalVideoTrackPublication #".concat(this._instanceId, ": ").concat(this.trackSid, "]");
     };
     return LocalVideoTrackPublication;
 }(LocalTrackPublication));
@@ -4217,7 +4219,7 @@ var MediaTrack = /** @class */ (function (_super) {
     MediaTrack.prototype._selectElement = function (selector) {
         var el = document.querySelector(selector);
         if (!el) {
-            throw new Error("Selector matched no element: " + selector);
+            throw new Error("Selector matched no element: ".concat(selector));
         }
         return el;
     };
@@ -4313,14 +4315,14 @@ function playIfPausedAndNotBackgrounded(el, log) {
             // Bug: https://bugs.webkit.org/show_bug.cgi?id=213853
             //
             localMediaRestartDeferreds.whenResolved('audio').then(function () {
-                log.info("Playing unintentionally paused <" + tag + "> element");
+                log.info("Playing unintentionally paused <".concat(tag, "> element"));
                 log.debug('Element:', el);
                 return el.play();
             }).then(function () {
-                log.info("Successfully played unintentionally paused <" + tag + "> element");
+                log.info("Successfully played unintentionally paused <".concat(tag, "> element"));
                 log.debug('Element:', el);
             }).catch(function (error) {
-                log.warn("Error while playing unintentionally paused <" + tag + "> element:", { error: error, el: el });
+                log.warn("Error while playing unintentionally paused <".concat(tag, "> element:"), { error: error, el: el });
             });
         }
     });
@@ -4455,7 +4457,7 @@ var RemoteAudioTrack = /** @class */ (function (_super) {
         return _super.call(this, sid, mediaTrackReceiver, isEnabled, isSwitchedOff, setPriority, setRenderHint, options) || this;
     }
     RemoteAudioTrack.prototype.toString = function () {
-        return "[RemoteAudioTrack #" + this._instanceId + ": " + this.sid + "]";
+        return "[RemoteAudioTrack #".concat(this._instanceId, ": ").concat(this.sid, "]");
     };
     /**
      * Update the subscribe {@link Track.Priority} of the {@link RemoteAudioTrack}.
@@ -4543,7 +4545,7 @@ var RemoteAudioTrackPublication = /** @class */ (function (_super) {
         return _super.call(this, signaling, options) || this;
     }
     RemoteAudioTrackPublication.prototype.toString = function () {
-        return "[RemoteAudioTrackPublication #" + this._instanceId + ": " + this.trackSid + "]";
+        return "[RemoteAudioTrackPublication #".concat(this._instanceId, ": ").concat(this.trackSid, "]");
     };
     return RemoteAudioTrackPublication;
 }(RemoteTrackPublication));
@@ -4606,10 +4608,14 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-var __spreadArray = (this && this.__spreadArray) || function (to, from) {
-    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
-        to[j] = from[i];
-    return to;
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
 var Track = require('./');
 var _a = require('../../util/constants'), E = _a.typeErrors, trackPriority = _a.trackPriority;
@@ -4712,7 +4718,7 @@ var RemoteDataTrack = /** @class */ (function (_super) {
      * @throws {RangeError}
      */
     RemoteDataTrack.prototype.setPriority = function (priority) {
-        var priorityValues = __spreadArray([null], __read(Object.values(trackPriority)));
+        var priorityValues = __spreadArray([null], __read(Object.values(trackPriority)), false);
         if (!priorityValues.includes(priority)) {
             // eslint-disable-next-line new-cap
             throw E.INVALID_VALUE('priority', priorityValues);
@@ -4800,7 +4806,7 @@ var RemoteDataTrackPublication = /** @class */ (function (_super) {
         return _super.call(this, signaling, options) || this;
     }
     RemoteDataTrackPublication.prototype.toString = function () {
-        return "[RemoteDataTrackPublication #" + this._instanceId + ": " + this.trackSid + "]";
+        return "[RemoteDataTrackPublication #".concat(this._instanceId, ": ").concat(this.trackSid, "]");
     };
     return RemoteDataTrackPublication;
 }(RemoteTrackPublication));
@@ -4855,10 +4861,14 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-var __spreadArray = (this && this.__spreadArray) || function (to, from) {
-    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
-        to[j] = from[i];
-    return to;
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
 var _a = require('../../util/constants'), E = _a.typeErrors, trackPriority = _a.trackPriority;
 var guessBrowser = require('@twilio/webrtc/lib/util').guessBrowser;
@@ -4964,7 +4974,7 @@ function mixinRemoteMediaTrack(AudioOrVideoTrack) {
          * @throws {RangeError}
          */
         RemoteMediaTrack.prototype.setPriority = function (priority) {
-            var priorityValues = __spreadArray([null], __read(Object.values(trackPriority)));
+            var priorityValues = __spreadArray([null], __read(Object.values(trackPriority)), false);
             if (!priorityValues.includes(priority)) {
                 // eslint-disable-next-line new-cap
                 throw E.INVALID_VALUE('priority', priorityValues);
@@ -5051,15 +5061,15 @@ function playIfPausedWhileInBackground(remoteMediaTrack) {
             var shim = remoteMediaTrack._elShims.get(el);
             var isInadvertentlyPaused = el.paused && shim && !shim.pausedIntentionally();
             if (isInadvertentlyPaused) {
-                log.info("Playing inadvertently paused <" + kind + "> element");
+                log.info("Playing inadvertently paused <".concat(kind, "> element"));
                 log.debug('Element:', el);
                 log.debug('RemoteMediaTrack:', remoteMediaTrack);
                 el.play().then(function () {
-                    log.info("Successfully played inadvertently paused <" + kind + "> element");
+                    log.info("Successfully played inadvertently paused <".concat(kind, "> element"));
                     log.debug('Element:', el);
                     log.debug('RemoteMediaTrack:', remoteMediaTrack);
                 }).catch(function (err) {
-                    log.warn("Error while playing inadvertently paused <" + kind + "> element:", { err: err, el: el, remoteMediaTrack: remoteMediaTrack });
+                    log.warn("Error while playing inadvertently paused <".concat(kind, "> element:"), { err: err, el: el, remoteMediaTrack: remoteMediaTrack });
                 });
             }
         });
@@ -5212,7 +5222,7 @@ var RemoteTrackPublication = /** @class */ (function (_super) {
                 _this.emit(signaling.isEnabled ? 'trackEnabled' : 'trackDisabled');
             }
             if (isSwitchedOff !== signaling.isSwitchedOff) {
-                _this._log.debug(_this.trackSid + ": " + (isSwitchedOff ? 'OFF' : 'ON') + " => " + (signaling.isSwitchedOff ? 'OFF' : 'ON'));
+                _this._log.debug("".concat(_this.trackSid, ": ").concat(isSwitchedOff ? 'OFF' : 'ON', " => ").concat(signaling.isSwitchedOff ? 'OFF' : 'ON'));
                 isSwitchedOff = signaling.isSwitchedOff;
                 if (_this.track) {
                     _this.track._setSwitchedOff(signaling.isSwitchedOff);
@@ -5230,7 +5240,7 @@ var RemoteTrackPublication = /** @class */ (function (_super) {
         return _this;
     }
     RemoteTrackPublication.prototype.toString = function () {
-        return "[RemoteTrackPublication #" + this._instanceId + ": " + this.trackSid + "]";
+        return "[RemoteTrackPublication #".concat(this._instanceId, ": ").concat(this.trackSid, "]");
     };
     /**
      * @private
@@ -5589,7 +5599,7 @@ var RemoteVideoTrack = /** @class */ (function (_super) {
         return _super.prototype.removeProcessor.apply(this, arguments);
     };
     RemoteVideoTrack.prototype.toString = function () {
-        return "[RemoteVideoTrack #" + this._instanceId + ": " + this.sid + "]";
+        return "[RemoteVideoTrack #".concat(this._instanceId, ": ").concat(this.sid, "]");
     };
     /**
      * Update the subscribe {@link Track.Priority} of the {@link RemoteVideoTrack}.
@@ -5725,7 +5735,7 @@ var RemoteVideoTrackPublication = /** @class */ (function (_super) {
         return _super.call(this, signaling, options) || this;
     }
     RemoteVideoTrackPublication.prototype.toString = function () {
-        return "[RemoteVideoTrackPublication #" + this._instanceId + ": " + this.trackSid + "]";
+        return "[RemoteVideoTrackPublication #".concat(this._instanceId, ": ").concat(this.trackSid, "]");
     };
     return RemoteVideoTrackPublication;
 }(RemoteTrackPublication));
@@ -5922,7 +5932,7 @@ var TrackPublication = /** @class */ (function (_super) {
         return valueToJSON(this);
     };
     TrackPublication.prototype.toString = function () {
-        return "[TrackPublication #" + this._instanceId + ": " + this.trackSid + "]";
+        return "[TrackPublication #".concat(this._instanceId, ": ").concat(this.trackSid, "]");
     };
     return TrackPublication;
 }(EventEmitter));
@@ -6109,7 +6119,7 @@ var VideoProcessorEventObserver = /** @class */ (function (_super) {
         var data = { captureHeight: captureHeight, captureWidth: captureWidth, inputFrameRate: inputFrameRate, isRemoteVideoTrack: isRemoteVideoTrack };
         data.name = processor._name || 'VideoProcessor';
         ['assetsPath', 'blurFilterRadius', 'fitType', 'isSimdEnabled', 'maskBlurRadius', 'version'].forEach(function (prop) {
-            var val = processor["_" + prop];
+            var val = processor["_".concat(prop)];
             if (typeof val !== 'undefined') {
                 data[prop] = val;
             }
@@ -6168,7 +6178,7 @@ var VideoProcessorEventObserver = /** @class */ (function (_super) {
      * @private
      */
     VideoProcessorEventObserver.prototype._reemitEvent = function (name, data) {
-        this._log.debug("VideoProcessor:" + name, data);
+        this._log.debug("VideoProcessor:".concat(name), data);
         this.emit('event', { name: name, data: data });
     };
     return VideoProcessorEventObserver;
@@ -6821,10 +6831,14 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-var __spreadArray = (this && this.__spreadArray) || function (to, from) {
-    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
-        to[j] = from[i];
-    return to;
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
 var EventEmitter = require('./eventemitter');
 var RemoteAudioTrack = require('./media/track/remoteaudiotrack');
@@ -6998,7 +7012,7 @@ var Participant = /** @class */ (function (_super) {
                 : null);
         });
         reemitSignalingStateChangedEvents(_this, signaling);
-        log.info("Created a new Participant" + (_this.identity ? ": " + _this.identity : ''));
+        log.info("Created a new Participant".concat(_this.identity ? ": ".concat(_this.identity) : ''));
         return _this;
     }
     /**
@@ -7020,7 +7034,7 @@ var Participant = /** @class */ (function (_super) {
         return [];
     };
     Participant.prototype.toString = function () {
-        return "[Participant #" + this._instanceId + ": " + this.sid + "]";
+        return "[Participant #".concat(this._instanceId, ": ").concat(this.sid, "]");
     };
     /**
      * @private
@@ -7041,8 +7055,8 @@ var Participant = /** @class */ (function (_super) {
         }[track.kind];
         tracksByKind.set(id, track);
         reemitTrackEvents(this, track, id);
-        log.info("Added a new " + util.trackClass(track) + ":", id);
-        log.debug(util.trackClass(track) + ":", track);
+        log.info("Added a new ".concat(util.trackClass(track), ":"), id);
+        log.debug("".concat(util.trackClass(track), ":"), track);
         return track;
     };
     /**
@@ -7063,8 +7077,8 @@ var Participant = /** @class */ (function (_super) {
         }[publication.kind];
         trackPublicationsByKind.set(publication.trackSid, publication);
         reemitTrackPublicationEvents(this, publication);
-        log.info("Added a new " + util.trackPublicationClass(publication) + ":", publication.trackSid);
-        log.debug(util.trackPublicationClass(publication) + ":", publication);
+        log.info("Added a new ".concat(util.trackPublicationClass(publication), ":"), publication.trackSid);
+        log.debug("".concat(util.trackPublicationClass(publication), ":"), publication);
         return publication;
     };
     /**
@@ -7200,8 +7214,8 @@ var Participant = /** @class */ (function (_super) {
             track.removeListener(event, reemitter);
         });
         var log = this._log;
-        log.info("Removed a " + util.trackClass(track) + ":", id);
-        log.debug(util.trackClass(track) + ":", track);
+        log.info("Removed a ".concat(util.trackClass(track), ":"), id);
+        log.debug("".concat(util.trackClass(track), ":"), track);
         return track;
     };
     /**
@@ -7226,8 +7240,8 @@ var Participant = /** @class */ (function (_super) {
             publication.removeListener(event, reemitter);
         });
         var log = this._log;
-        log.info("Removed a " + util.trackPublicationClass(publication) + ":", publication.trackSid);
-        log.debug(util.trackPublicationClass(publication) + ":", publication);
+        log.info("Removed a ".concat(util.trackPublicationClass(publication), ":"), publication.trackSid);
+        log.debug("".concat(util.trackPublicationClass(publication), ":"), publication);
         return publication;
     };
     Participant.prototype.toJSON = function () {
@@ -7373,7 +7387,7 @@ function reemitTrackEvents(participant, track, id) {
         var participantEvent = eventPair[1];
         trackEventReemitters.set(trackEvent, function () {
             var args = [participantEvent].concat([].slice.call(arguments));
-            return participant.emit.apply(participant, __spreadArray([], __read(args)));
+            return participant.emit.apply(participant, __spreadArray([], __read(args), false));
         });
         track.on(trackEvent, trackEventReemitters.get(trackEvent));
     });
@@ -7397,7 +7411,7 @@ function reemitTrackPublicationEvents(participant, publication) {
             for (var _i = 0; _i < arguments.length; _i++) {
                 args[_i] = arguments[_i];
             }
-            participant.emit.apply(participant, __spreadArray(__spreadArray([participantEvent], __read(args)), [publication]));
+            participant.emit.apply(participant, __spreadArray(__spreadArray([participantEvent], __read(args), false), [publication], false));
         });
         publication.on(publicationEvent, publicationEventReemitters.get(publicationEvent));
     });
@@ -7635,10 +7649,14 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-var __spreadArray = (this && this.__spreadArray) || function (to, from) {
-    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
-        to[j] = from[i];
-    return to;
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.makeStat = void 0;
@@ -7649,8 +7667,8 @@ exports.makeStat = void 0;
  */
 function makeStat(values) {
     if (values.length) {
-        var min = Math.min.apply(Math, __spreadArray([], __read(values)));
-        var max = Math.max.apply(Math, __spreadArray([], __read(values)));
+        var min = Math.min.apply(Math, __spreadArray([], __read(values), false));
+        var max = Math.max.apply(Math, __spreadArray([], __read(values), false));
         var average = values.reduce(function (total, value) { return total + value; }, 0) / values.length;
         return { min: min, max: max, average: average };
     }
@@ -7863,7 +7881,7 @@ var PreflightTest = /** @class */ (function (_super) {
         return _this;
     }
     PreflightTest.prototype.toString = function () {
-        return "[Preflight #" + this._instanceId + "]";
+        return "[Preflight #".concat(this._instanceId, "]");
     };
     /**
      * stops ongoing tests and emits error
@@ -7883,9 +7901,9 @@ var PreflightTest = /** @class */ (function (_super) {
                 media: this._mediaTiming.getTimeMeasurement()
             },
             stats: {
-                jitter: makestat_1.makeStat(collectedStats.jitter),
-                rtt: makestat_1.makeStat(collectedStats.rtt),
-                packetLoss: makestat_1.makeStat(collectedStats.packetLoss),
+                jitter: (0, makestat_1.makeStat)(collectedStats.jitter),
+                rtt: (0, makestat_1.makeStat)(collectedStats.rtt),
+                packetLoss: (0, makestat_1.makeStat)(collectedStats.packetLoss),
             },
             selectedIceCandidatePairStats: collectedStats.selectedIceCandidatePairStats,
             iceCandidateStats: collectedStats.iceCandidateStats
@@ -7906,7 +7924,7 @@ var PreflightTest = /** @class */ (function (_super) {
                         timer = null;
                         timeoutPromise = new Promise(function (_resolve, reject) {
                             timer = setTimeout(function () {
-                                reject(new Error("Timed out waiting for : " + stepName));
+                                reject(new Error("Timed out waiting for : ".concat(stepName)));
                             }, MAX_STEP_DURATION);
                         });
                         _a.label = 1;
@@ -7976,13 +7994,13 @@ var PreflightTest = /** @class */ (function (_super) {
                     case 1:
                         _a.trys.push([1, 8, 9, 10]);
                         elements_1 = [];
-                        return [4 /*yield*/, this._executePreflightStep('Acquire media', function () { return [syntheticaudio_1.syntheticAudio(), syntheticvideo_1.syntheticVideo({ width: 640, height: 480 })]; })];
+                        return [4 /*yield*/, this._executePreflightStep('Acquire media', function () { return [(0, syntheticaudio_1.syntheticAudio)(), (0, syntheticvideo_1.syntheticVideo)({ width: 640, height: 480 })]; })];
                     case 2:
                         localTracks = _a.sent();
                         this.emit('progress', PreflightProgress.mediaAcquired);
                         this.emit('debug', { localTracks: localTracks });
                         this._connectTiming.start();
-                        return [4 /*yield*/, this._executePreflightStep('Get turn credentials', function () { return getturncredentials_1.getTurnCredentials(token, options); })];
+                        return [4 /*yield*/, this._executePreflightStep('Get turn credentials', function () { return (0, getturncredentials_1.getTurnCredentials)(token, options); })];
                     case 3:
                         iceServers = _a.sent();
                         this._connectTiming.stop();
@@ -8085,7 +8103,7 @@ var PreflightTest = /** @class */ (function (_super) {
             var combinedStats, timestamp, bytesSent, bytesReceived, packets, packetsLost, roundTripTime, jitter, selectedIceCandidatePairStats, iceCandidateStats, hasLastData, fractionPacketLost, percentPacketsLost, score;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, getCombinedConnectionStats_1.getCombinedConnectionStats({ publisher: senderPC, subscriber: receiverPC })];
+                    case 0: return [4 /*yield*/, (0, getCombinedConnectionStats_1.getCombinedConnectionStats)({ publisher: senderPC, subscriber: receiverPC })];
                     case 1:
                         combinedStats = _a.sent();
                         timestamp = combinedStats.timestamp, bytesSent = combinedStats.bytesSent, bytesReceived = combinedStats.bytesReceived, packets = combinedStats.packets, packetsLost = combinedStats.packetsLost, roundTripTime = combinedStats.roundTripTime, jitter = combinedStats.jitter, selectedIceCandidatePairStats = combinedStats.selectedIceCandidatePairStats, iceCandidateStats = combinedStats.iceCandidateStats;
@@ -8102,7 +8120,7 @@ var PreflightTest = /** @class */ (function (_super) {
                             fractionPacketLost = this._packetLossMovingAverage.get();
                             percentPacketsLost = Math.min(100, fractionPacketLost * 100);
                             collectedStats.packetLoss.push(percentPacketsLost);
-                            score = mos_1.calculateMOS(roundTripTime, jitter, fractionPacketLost);
+                            score = (0, mos_1.calculateMOS)(roundTripTime, jitter, fractionPacketLost);
                             collectedStats.mos.push(score);
                         }
                         if (!collectedStats.selectedIceCandidatePairStats) {
@@ -8124,7 +8142,7 @@ var PreflightTest = /** @class */ (function (_super) {
                     case 0:
                         startTime = Date.now();
                         STAT_INTERVAL = Math.min(1000, duration);
-                        return [4 /*yield*/, util_1.waitForSometime(STAT_INTERVAL)];
+                        return [4 /*yield*/, (0, util_1.waitForSometime)(STAT_INTERVAL)];
                     case 1:
                         _a.sent();
                         return [4 /*yield*/, this._collectRTCStats(collectedStats, senderPC, receiverPC)];
@@ -8292,7 +8310,7 @@ function syntheticVideo(_a) {
             var g = Math.round(Math.random() * 255);
             var b = Math.round(Math.random() * 255);
             var a = Math.round(Math.random() * 255);
-            ctx.fillStyle = "rgba(" + r + ", " + g + ", " + b + ", " + a + ")";
+            ctx.fillStyle = "rgba(".concat(r, ", ").concat(g, ", ").concat(b, ", ").concat(a, ")");
             ctx.fillRect(Math.random() * width, Math.random() * height, 50, 50);
             requestAnimationFrame(animate);
         }
@@ -8371,10 +8389,14 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-var __spreadArray = (this && this.__spreadArray) || function (to, from) {
-    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
-        to[j] = from[i];
-    return to;
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
 var EventEmitter = require('events').EventEmitter;
 /**
@@ -8415,7 +8437,7 @@ var QueueingEventEmitter = /** @class */ (function (_super) {
         }
         var queue = this._queuedEvents.get(event) || [];
         this._queuedEvents.delete(event);
-        return queue.reduce(function (result, args) { return _this.emit.apply(_this, __spreadArray([], __read([event].concat(args)))) && result; }, result);
+        return queue.reduce(function (result, args) { return _this.emit.apply(_this, __spreadArray([], __read([event].concat(args)), false)) && result; }, result);
     };
     /**
      * If the event has listeners, emit the event; otherwise, queue the event.
@@ -8425,7 +8447,7 @@ var QueueingEventEmitter = /** @class */ (function (_super) {
      */
     QueueingEventEmitter.prototype.queue = function () {
         var args = [].slice.call(arguments);
-        if (this.emit.apply(this, __spreadArray([], __read(args)))) {
+        if (this.emit.apply(this, __spreadArray([], __read(args), false))) {
             return true;
         }
         var event = args[0];
@@ -8472,10 +8494,14 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-var __spreadArray = (this && this.__spreadArray) || function (to, from) {
-    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
-        to[j] = from[i];
-    return to;
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
 var Participant = require('./participant');
 /**
@@ -8520,7 +8546,7 @@ var RemoteParticipant = /** @class */ (function (_super) {
         return _this;
     }
     RemoteParticipant.prototype.toString = function () {
-        return "[RemoteParticipant #" + this._instanceId + (this.sid ? ": " + this.sid : '') + "]";
+        return "[RemoteParticipant #".concat(this._instanceId).concat(this.sid ? ": ".concat(this.sid) : '', "]");
     };
     /**
      * @private
@@ -8554,14 +8580,14 @@ var RemoteParticipant = /** @class */ (function (_super) {
      * @private
      */
     RemoteParticipant.prototype._getTrackPublicationEvents = function () {
-        return __spreadArray(__spreadArray([], __read(_super.prototype._getTrackPublicationEvents.call(this))), [
+        return __spreadArray(__spreadArray([], __read(_super.prototype._getTrackPublicationEvents.call(this)), false), [
             ['subscriptionFailed', 'trackSubscriptionFailed'],
             ['trackDisabled', 'trackDisabled'],
             ['trackEnabled', 'trackEnabled'],
             ['publishPriorityChanged', 'trackPublishPriorityChanged'],
             ['trackSwitchedOff', 'trackSwitchedOff'],
             ['trackSwitchedOn', 'trackSwitchedOn']
-        ]);
+        ], false);
     };
     /**
      * @private
@@ -8753,10 +8779,14 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-var __spreadArray = (this && this.__spreadArray) || function (to, from) {
-    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
-        to[j] = from[i];
-    return to;
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
 var EventEmitter = require('./eventemitter');
 var RemoteParticipant = require('./remoteparticipant');
@@ -8886,7 +8916,7 @@ var Room = /** @class */ (function (_super) {
         return _this;
     }
     Room.prototype.toString = function () {
-        return "[Room #" + this._instanceId + ": " + this.sid + "]";
+        return "[Room #".concat(this._instanceId, ": ").concat(this.sid, "]");
     };
     /**
      * Disconnect from the {@link Room}.
@@ -9213,7 +9243,7 @@ function connectParticipant(room, participantSignaling) {
             var args = [].slice.call(arguments);
             args.unshift(participantEvent);
             args.push(participant);
-            room.emit.apply(room, __spreadArray([], __read(args)));
+            room.emit.apply(room, __spreadArray([], __read(args), false));
         }
         participant.on(event, reemit);
         return [event, reemit];
@@ -9234,8 +9264,8 @@ function connectParticipant(room, participantSignaling) {
 function handleRecordingEvents(room, recording) {
     recording.on('updated', function updated() {
         var started = recording.isEnabled;
-        room._log.info("Recording " + (started ? 'started' : 'stopped'));
-        room.emit("recording" + (started ? 'Started' : 'Stopped'));
+        room._log.info("Recording ".concat(started ? 'started' : 'stopped'));
+        room.emit("recording".concat(started ? 'Started' : 'Stopped'));
     });
 }
 function handleSignalingEvents(room, signaling) {
@@ -9389,7 +9419,7 @@ var Signaling = /** @class */ (function (_super) {
                 case 'open':
                     return _this._close(key);
                 default:
-                    throw new Error("Unexpected Signaling state \"" + _this.state + "\"");
+                    throw new Error("Unexpected Signaling state \"".concat(_this.state, "\""));
             }
         });
     };
@@ -9414,7 +9444,7 @@ var Signaling = /** @class */ (function (_super) {
                     self.releaseLockCompletely(key);
                     return self._connect(localParticipant, token, encodingParameters, preferredCodecs, options);
                 default:
-                    throw new Error("Unexpected Signaling state \"" + self.state + "\"");
+                    throw new Error("Unexpected Signaling state \"".concat(self.state, "\""));
             }
         });
     };
@@ -9438,7 +9468,7 @@ var Signaling = /** @class */ (function (_super) {
                 case 'open':
                     return _this;
                 default:
-                    throw new Error("Unexpected Signaling state \"" + _this.state + "\"");
+                    throw new Error("Unexpected Signaling state \"".concat(_this.state, "\""));
             }
         });
     };
@@ -10273,7 +10303,7 @@ var RoomSignaling = /** @class */ (function (_super) {
         return false;
     };
     RoomSignaling.prototype.toString = function () {
-        return "[RoomSignaling #" + this._instanceId + ": " + (this.localParticipant ? this.localParticipant.sid : 'null') + "]";
+        return "[RoomSignaling #".concat(this._instanceId, ": ").concat(this.localParticipant ? this.localParticipant.sid : 'null', "]");
     };
     /**
      * Connect {@link RemoteParticipantSignaling} to the {@link RoomSignaling}.
@@ -11460,7 +11490,7 @@ var MediaSignaling = /** @class */ (function (_super) {
         configurable: true
     });
     MediaSignaling.prototype.toString = function () {
-        return "[MediaSignaling #" + this._instanceId + ":" + this.channel + "]";
+        return "[MediaSignaling #".concat(this._instanceId, ":").concat(this.channel, "]");
     };
     MediaSignaling.prototype.setup = function (id) {
         var _this = this;
@@ -11936,10 +11966,14 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-var __spreadArray = (this && this.__spreadArray) || function (to, from) {
-    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
-        to[j] = from[i];
-    return to;
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
 var DefaultBackoff = require('backoff');
 var _a = require('@twilio/webrtc'), DefaultMediaStream = _a.MediaStream, DefaultRTCIceCandidate = _a.RTCIceCandidate, DefaultRTCPeerConnection = _a.RTCPeerConnection, DefaultRTCSessionDescription = _a.RTCSessionDescription, getStatistics = _a.getStats;
@@ -12313,7 +12347,7 @@ var PeerConnectionV2 = /** @class */ (function (_super) {
         return _this;
     }
     PeerConnectionV2.prototype.toString = function () {
-        return "[PeerConnectionV2 #" + this._instanceId + ": " + this.id + "]";
+        return "[PeerConnectionV2 #".concat(this._instanceId, ": ").concat(this.id, "]");
     };
     Object.defineProperty(PeerConnectionV2.prototype, "connectionState", {
         /**
@@ -12379,7 +12413,7 @@ var PeerConnectionV2 = /** @class */ (function (_super) {
             //
             // Chrome bug: https://bugs.chromium.org/p/chromium/issues/detail?id=978582
             //
-            _this._log.warn("Failed to add RTCIceCandidate " + (candidate ? "\"" + candidate.candidate + "\"" : 'null') + ": "
+            _this._log.warn("Failed to add RTCIceCandidate ".concat(candidate ? "\"".concat(candidate.candidate, "\"") : 'null', ": ")
                 + error.message);
         });
     };
@@ -12405,7 +12439,7 @@ var PeerConnectionV2 = /** @class */ (function (_super) {
         if (transceiver && transceiver.sender) {
             var oldTrackId = transceiver.sender.track ? transceiver.sender.track.id : null;
             if (oldTrackId) {
-                this._log.warn("Reusing transceiver: " + transceiver.mid + "] " + oldTrackId + " => " + track.id);
+                this._log.warn("Reusing transceiver: ".concat(transceiver.mid, "] ").concat(oldTrackId, " => ").concat(track.id));
             }
             // NOTE(mpatwardhan):remember this transceiver while we replace track.
             // we recycle transceivers that are not in use after 'negotiationCompleted', but we want to prevent
@@ -12614,7 +12648,7 @@ var PeerConnectionV2 = /** @class */ (function (_super) {
         var iceConnectionState = this._peerConnection.iceConnectionState;
         var isIceConnectedOrComplete = ['connected', 'completed'].includes(iceConnectionState);
         var log = this._log;
-        log.debug("ICE connection state is \"" + iceConnectionState + "\"");
+        log.debug("ICE connection state is \"".concat(iceConnectionState, "\""));
         if (isIceConnectedOrComplete) {
             this._iceReconnectTimeout.clear();
             this._iceRestartBackoff.reset();
@@ -12671,13 +12705,13 @@ var PeerConnectionV2 = /** @class */ (function (_super) {
     PeerConnectionV2.prototype._handleIceGatheringStateChange = function () {
         var iceGatheringState = this._peerConnection.iceGatheringState;
         var log = this._log;
-        log.debug("ICE gathering state is \"" + iceGatheringState + "\"");
+        log.debug("ICE gathering state is \"".concat(iceGatheringState, "\""));
         // NOTE(mmalavalli): Start the ICE gathering timeout only if the RTCPeerConnection
         // has started gathering candidates for the first time since the initial offer/answer
         // or an offer/answer with ICE restart.
         var _a = this._iceGatheringTimeout, delay = _a.delay, isSet = _a.isSet;
         if (iceGatheringState === 'gathering' && !this._didGenerateLocalCandidates && !isSet) {
-            log.debug("Starting ICE gathering timeout: " + delay);
+            log.debug("Starting ICE gathering timeout: ".concat(delay));
             this._iceGatheringFailed = false;
             this._iceGatheringTimeout.start();
         }
@@ -12746,7 +12780,7 @@ var PeerConnectionV2 = /** @class */ (function (_super) {
         this._shouldRestartIce = true;
         var _a = this._iceReconnectTimeout, delay = _a.delay, isSet = _a.isSet;
         if (!isSet) {
-            log.debug("Starting ICE reconnect timeout: " + delay);
+            log.debug("Starting ICE reconnect timeout: ".concat(delay));
             this._iceReconnectTimeout.start();
         }
         this.offer();
@@ -12947,15 +12981,15 @@ var PeerConnectionV2 = /** @class */ (function (_super) {
             });
         }
         return this._peerConnection.setLocalDescription(description).catch(function (error) {
-            _this._log.warn("Calling setLocalDescription with an RTCSessionDescription of type \"" + description.type + "\" failed with the error \"" + error.message + "\".");
+            _this._log.warn("Calling setLocalDescription with an RTCSessionDescription of type \"".concat(description.type, "\" failed with the error \"").concat(error.message, "\"."));
             var errorToThrow = new MediaClientLocalDescFailedError();
             var publishWarning = {
-                message: "Calling setLocalDescription with an RTCSessionDescription of type \"" + description.type + "\" failed",
+                message: "Calling setLocalDescription with an RTCSessionDescription of type \"".concat(description.type, "\" failed"),
                 code: errorToThrow.code,
                 error: error
             };
             if (description.sdp) {
-                _this._log.warn("The SDP was " + description.sdp);
+                _this._log.warn("The SDP was ".concat(description.sdp));
                 publishWarning.sdp = description.sdp;
             }
             _this._publishMediaWarning(publishWarning);
@@ -13043,9 +13077,9 @@ var PeerConnectionV2 = /** @class */ (function (_super) {
                 negotiationCompleted(_this);
             }
         }, function (error) {
-            _this._log.warn("Calling setRemoteDescription with an RTCSessionDescription of type \"" + description.type + "\" failed with the error \"" + error.message + "\".");
+            _this._log.warn("Calling setRemoteDescription with an RTCSessionDescription of type \"".concat(description.type, "\" failed with the error \"").concat(error.message, "\"."));
             if (description.sdp) {
-                _this._log.warn("The SDP was " + description.sdp);
+                _this._log.warn("The SDP was ".concat(description.sdp));
             }
             throw error;
         });
@@ -13112,7 +13146,7 @@ var PeerConnectionV2 = /** @class */ (function (_super) {
         }).catch(function (error) {
             var errorToThrow = new MediaClientRemoteDescFailedError();
             _this._publishMediaWarning({
-                message: "Calling setRemoteDescription with an RTCSessionDescription of type \"" + description.type + "\" failed",
+                message: "Calling setRemoteDescription with an RTCSessionDescription of type \"".concat(description.type, "\" failed"),
                 code: errorToThrow.code,
                 error: error,
                 sdp: description.sdp
@@ -13164,7 +13198,7 @@ var PeerConnectionV2 = /** @class */ (function (_super) {
             this._dataChannels.set(dataTrackSender, dataChannel);
         }
         catch (error) {
-            this._log.warn("Error creating an RTCDataChannel for DataTrack \"" + dataTrackSender.id + "\": " + error.message);
+            this._log.warn("Error creating an RTCDataChannel for DataTrack \"".concat(dataTrackSender.id, "\": ").concat(error.message));
         }
     };
     /**
@@ -13347,7 +13381,7 @@ function rewriteLocalTrackId(pcv2, stats) {
     return Object.assign(stats, { trackId: trackId });
 }
 function rewriteTrackId(pcv2, stats) {
-    var receiver = __spreadArray([], __read(pcv2._mediaTrackReceivers)).find(function (receiver) { return receiver.track.id === stats.trackId; });
+    var receiver = __spreadArray([], __read(pcv2._mediaTrackReceivers), false).find(function (receiver) { return receiver.track.id === stats.trackId; });
     var trackId = receiver ? receiver.id : null;
     return Object.assign(stats, { trackId: trackId });
 }
@@ -13534,7 +13568,7 @@ function updateEncodingParameters(pcv2) {
         else if (pcv2._isChromeScreenShareTrack(sender.track)) {
             // NOTE(mpatwardhan): Sometimes (JSDK-2557) chrome does not send any bytes on screen track if MaxBitRate is set on it via setParameters,
             // To workaround this issue we will not apply maxBitrate if the track appears to be a screen share track created by chrome
-            pcv2._log.warn("Not setting maxBitrate for " + sender.track.kind + " Track " + sender.track.id + " because it appears to be screen share track: " + sender.track.label);
+            pcv2._log.warn("Not setting maxBitrate for ".concat(sender.track.kind, " Track ").concat(sender.track.id, " because it appears to be screen share track: ").concat(sender.track.label));
         }
         else {
             setMaxBitrate(params, maxBitrate);
@@ -13548,7 +13582,7 @@ function updateEncodingParameters(pcv2) {
             params.encodings[0].networkPriority = 'high';
         }
         sender.setParameters(params).catch(function (error) {
-            pcv2._log.warn("Error while setting encodings parameters for " + sender.track.kind + " Track " + sender.track.id + ": " + (error.message || error.name));
+            pcv2._log.warn("Error while setting encodings parameters for ".concat(sender.track.kind, " Track ").concat(sender.track.id, ": ").concat(error.message || error.name));
         });
     });
 }
@@ -13613,10 +13647,14 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-var __spreadArray = (this && this.__spreadArray) || function (to, from) {
-    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
-        to[j] = from[i];
-    return to;
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
 var guessBrowser = require('@twilio/webrtc/lib/util').guessBrowser;
 var PeerConnectionV2 = require('./peerconnection');
@@ -14120,7 +14158,7 @@ function summarizeIceOrPeerConnectionStates(states) {
  */
 function updateIceConnectionState(pcm) {
     pcm._lastIceConnectionState = pcm.iceConnectionState;
-    pcm._iceConnectionState = summarizeIceOrPeerConnectionStates(__spreadArray([], __read(pcm._peerConnections.values())).map(function (pcv2) { return pcv2.iceConnectionState; }));
+    pcm._iceConnectionState = summarizeIceOrPeerConnectionStates(__spreadArray([], __read(pcm._peerConnections.values()), false).map(function (pcv2) { return pcv2.iceConnectionState; }));
     if (pcm.iceConnectionState !== pcm._lastIceConnectionState) {
         pcm.emit('iceConnectionStateChanged');
     }
@@ -14133,7 +14171,7 @@ function updateIceConnectionState(pcm) {
  */
 function updateConnectionState(pcm) {
     pcm._lastConnectionState = pcm.connectionState;
-    pcm._connectionState = summarizeIceOrPeerConnectionStates(__spreadArray([], __read(pcm._peerConnections.values())).map(function (pcv2) { return pcv2.connectionState; }));
+    pcm._connectionState = summarizeIceOrPeerConnectionStates(__spreadArray([], __read(pcm._peerConnections.values()), false).map(function (pcv2) { return pcv2.connectionState; }));
     if (pcm.connectionState !== pcm._lastConnectionState) {
         pcm.emit('connectionStateChanged');
     }
@@ -14770,7 +14808,7 @@ var RoomV2 = /** @class */ (function (_super) {
         var initiallySwitchedOff = this._pendingSwitchOffStates.get(trackSid) || false;
         this._pendingSwitchOffStates.delete(trackSid);
         if (initiallySwitchedOff) {
-            this._log.warn("[" + trackSid + "] was initially switched off! ");
+            this._log.warn("[".concat(trackSid, "] was initially switched off! "));
         }
         return initiallySwitchedOff;
     };
@@ -14942,7 +14980,7 @@ var RoomV2 = /** @class */ (function (_super) {
                 tracksOff.forEach(function (trackSid) {
                     if (trackUpdates_1.get(trackSid)) {
                         // NOTE(mpatwardhan): This means that VIDEO-3762 has been reproduced.
-                        _this._log.warn(trackSid + " is DUPLICATED in both tracksOff and tracksOn list");
+                        _this._log.warn("".concat(trackSid, " is DUPLICATED in both tracksOff and tracksOn list"));
                     }
                     trackUpdates_1.set(trackSid, false);
                 });
@@ -15179,7 +15217,7 @@ function periodicallyPublishStats(roomV2, transport, intervalMs) {
                     'remoteVideoTrackStats'
                 ], function (prop) { return report[prop].map(function (_a) {
                     var ssrc = _a.ssrc, trackSid = _a.trackSid;
-                    return trackSid + "+" + ssrc;
+                    return "".concat(trackSid, "+").concat(ssrc);
                 }); });
                 var movingAverageDeltaKeysToBeRemoved = difference(Array.from(movingAverageDeltas.keys()), keys);
                 movingAverageDeltaKeysToBeRemoved.forEach(function (key) { return movingAverageDeltas.delete(key); });
@@ -15229,7 +15267,7 @@ function handleSubscriptions(room) {
 function addAVSyncMetricsToLocalTrackStats(trackStats, trackResponse, movingAverageDeltas) {
     var framesEncoded = trackResponse.framesEncoded, packetsSent = trackResponse.packetsSent, totalEncodeTime = trackResponse.totalEncodeTime, totalPacketSendDelay = trackResponse.totalPacketSendDelay;
     var augmentedTrackStats = Object.assign({}, trackStats);
-    var key = trackStats.trackSid + "+" + trackStats.ssrc;
+    var key = "".concat(trackStats.trackSid, "+").concat(trackStats.ssrc);
     var trackMovingAverageDeltas = movingAverageDeltas.get(key) || new Map();
     if (typeof totalEncodeTime === 'number' && typeof framesEncoded === 'number') {
         var trackAvgEncodeDelayMovingAverageDelta = trackMovingAverageDeltas.get('avgEncodeDelay')
@@ -15256,7 +15294,7 @@ function addAVSyncMetricsToLocalTrackStats(trackStats, trackResponse, movingAver
 function addAVSyncMetricsToRemoteTrackStats(trackStats, trackResponse, movingAverageDeltas) {
     var estimatedPlayoutTimestamp = trackResponse.estimatedPlayoutTimestamp, framesDecoded = trackResponse.framesDecoded, jitterBufferDelay = trackResponse.jitterBufferDelay, jitterBufferEmittedCount = trackResponse.jitterBufferEmittedCount, totalDecodeTime = trackResponse.totalDecodeTime;
     var augmentedTrackStats = Object.assign({}, trackStats);
-    var key = trackStats.trackSid + "+" + trackStats.ssrc;
+    var key = "".concat(trackStats.trackSid, "+").concat(trackStats.ssrc);
     var trackMovingAverageDeltas = movingAverageDeltas.get(key) || new Map();
     if (typeof estimatedPlayoutTimestamp === 'number') {
         augmentedTrackStats.estimatedPlayoutTimestamp = estimatedPlayoutTimestamp;
@@ -15478,7 +15516,7 @@ var _a = require('../../util'), createBandwidthProfilePayload = _a.createBandwid
 var _b = require('../../util/twilio-video-errors'), createTwilioError = _b.createTwilioError, RoomCompletedError = _b.RoomCompletedError, SignalingConnectionError = _b.SignalingConnectionError, SignalingServerBusyError = _b.SignalingServerBusyError;
 var ICE_VERSION = 1;
 var RSP_VERSION = 2;
-var SDK_NAME = packageInfo.name + ".js";
+var SDK_NAME = "".concat(packageInfo.name, ".js");
 var SDK_VERSION = packageInfo.version;
 /*
 TwilioConnectionTransport States
@@ -16088,10 +16126,14 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-var __spreadArray = (this && this.__spreadArray) || function (to, from) {
-    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
-        to[j] = from[i];
-    return to;
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
 var EventEmitter = require('events').EventEmitter;
 var util = require('./util');
@@ -16238,7 +16280,7 @@ var StateMachine = /** @class */ (function (_super) {
     StateMachine.prototype.preempt = function (newState, name, payload) {
         // 1. Check that the new state is valid.
         if (!isValidTransition(this._states, this.state, newState)) {
-            throw new Error("Cannot transition from \"" + this.state + "\" to \"" + newState + "\"");
+            throw new Error("Cannot transition from \"".concat(this.state, "\" to \"").concat(newState, "\""));
         }
         // 2. Release the old lock, if any.
         var oldLock;
@@ -16274,10 +16316,10 @@ var StateMachine = /** @class */ (function (_super) {
      */
     StateMachine.prototype.releaseLock = function (key) {
         if (!this.isLocked) {
-            throw new Error("Could not release the lock for " + key.name + " because the StateMachine is not locked");
+            throw new Error("Could not release the lock for ".concat(key.name, " because the StateMachine is not locked"));
         }
         else if (!this.hasLock(key)) {
-            throw new Error("Could not release the lock for " + key.name + " because " + this._lock.name + " has the lock");
+            throw new Error("Could not release the lock for ".concat(key.name, " because ").concat(this._lock.name, " has the lock"));
         }
         if (key.depth === 0) {
             this._lock = null;
@@ -16296,10 +16338,10 @@ var StateMachine = /** @class */ (function (_super) {
      */
     StateMachine.prototype.releaseLockCompletely = function (key) {
         if (!this.isLocked) {
-            throw new Error("Could not release the lock for " + key.name + " because the StateMachine is not locked");
+            throw new Error("Could not release the lock for ".concat(key.name, " because the StateMachine is not locked"));
         }
         else if (!this.hasLock(key)) {
-            throw new Error("Could not release the lock for " + key.name + " because " + this._lock.name + " has the lock");
+            throw new Error("Could not release the lock for ".concat(key.name, " because ").concat(this._lock.name, " has the lock"));
         }
         key.depth = 0;
         this._lock = null;
@@ -16344,7 +16386,7 @@ var StateMachine = /** @class */ (function (_super) {
         var key = typeof nameOrKey === 'string' ? null : nameOrKey;
         var name = key ? key.name : nameOrKey;
         if (key && !this.hasLock(key) || !key && this.isLocked) {
-            throw new Error("Could not take the lock for " + name + " because the lock for " + this._lock.name + " was not released");
+            throw new Error("Could not take the lock for ".concat(name, " because the lock for ").concat(this._lock.name, " was not released"));
         }
         // Reentrant lock
         if (key) {
@@ -16374,19 +16416,19 @@ var StateMachine = /** @class */ (function (_super) {
                     'transition');
             }
             else if (!this.hasLock(key)) {
-                throw new Error("Could not transition using the key for " + key.name + " because " + this._lock.name + " has the lock");
+                throw new Error("Could not transition using the key for ".concat(key.name, " because ").concat(this._lock.name, " has the lock"));
             }
         }
         else if (key) {
-            throw new Error("Key provided for " + key.name + ", but the StateMachine was not locked (possibly due to preemption)");
+            throw new Error("Key provided for ".concat(key.name, ", but the StateMachine was not locked (possibly due to preemption)"));
         }
         // 2. Check that the new state is valid.
         if (!isValidTransition(this._states, this.state, newState)) {
-            throw new Error("Cannot transition from \"" + this.state + "\" to \"" + newState + "\"");
+            throw new Error("Cannot transition from \"".concat(this.state, "\" to \"").concat(newState, "\""));
         }
         // 3. Update the state and emit an event.
         this._state = newState;
-        this.emit.apply(this, __spreadArray([], __read(['stateChanged', newState].concat(payload))));
+        this.emit.apply(this, __spreadArray([], __read(['stateChanged', newState].concat(payload)), false));
     };
     /**
      * Attempt to transition to a new state. Unlike {@link StateMachine#transition},
@@ -16497,7 +16539,7 @@ function transformStates(states) {
  * @returns {Error}
  */
 function createUnreachableError(here, there) {
-    return new Error("\"" + there + "\" cannot be reached from \"" + here + "\"");
+    return new Error("\"".concat(there, "\" cannot be reached from \"").concat(here, "\""));
 }
 module.exports = StateMachine;
 
@@ -17286,10 +17328,14 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-var __spreadArray = (this && this.__spreadArray) || function (to, from) {
-    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
-        to[j] = from[i];
-    return to;
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
 var __values = (this && this.__values) || function(o) {
     var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
@@ -17386,10 +17432,10 @@ var PeerConnectionReportFactory = /** @class */ (function () {
             ? updateFirefox(this)
             : updateChrome(this);
         return updatePromise.then(function () {
-            var audioSenderReportFactories = __spreadArray([], __read(_this.audio.send.values()));
-            var videoSenderReportFactories = __spreadArray([], __read(_this.video.send.values()));
-            var audioReceiverReportFactories = __spreadArray([], __read(_this.audio.recv.values()));
-            var videoReceiverReportFactories = __spreadArray([], __read(_this.video.recv.values()));
+            var audioSenderReportFactories = __spreadArray([], __read(_this.audio.send.values()), false);
+            var videoSenderReportFactories = __spreadArray([], __read(_this.video.send.values()), false);
+            var audioReceiverReportFactories = __spreadArray([], __read(_this.audio.recv.values()), false);
+            var videoReceiverReportFactories = __spreadArray([], __read(_this.video.recv.values()), false);
             var report = new PeerConnectionReport(_this.ice.lastReport, {
                 send: audioSenderReportFactories.map(function (factory) { return factory.lastReport; }).filter(function (report) { return report; }),
                 recv: audioReceiverReportFactories.map(function (factory) { return factory.lastReport; }).filter(function (report) { return report; })
@@ -17422,7 +17468,7 @@ function getSenderOrReceiverReports(sendersOrReceivers) {
                 for (var _b = __values(report.values()), _c = _b.next(); !_c.done; _c = _b.next()) {
                     var stats = _c.value;
                     if (stats.type === 'inbound-rtp') {
-                        stats.id = trackId + "-" + stats.id;
+                        stats.id = "".concat(trackId, "-").concat(stats.id);
                     }
                 }
             }
@@ -18486,10 +18532,14 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-var __spreadArray = (this && this.__spreadArray) || function (to, from) {
-    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
-        to[j] = from[i];
-    return to;
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
 var StateMachine = require('./statemachine');
 var _a = require('./util'), buildLogLevels = _a.buildLogLevels, makeUUID = _a.makeUUID;
@@ -18594,7 +18644,7 @@ var TwilioConnection = /** @class */ (function (_super) {
         var log = new options.Log('default', _this, logLevels, options.loggerName);
         var networkMonitor = options.networkMonitor ? new NetworkMonitor(function () {
             var type = networkMonitor.type;
-            var reason = "Network changed" + (type ? " to " + type : '');
+            var reason = "Network changed".concat(type ? " to ".concat(type) : '');
             log.debug(reason);
             _this._close({ code: WS_CLOSE_NETWORK_CHANGED, reason: reason });
         }) : null;
@@ -18670,7 +18720,7 @@ var TwilioConnection = /** @class */ (function (_super) {
                 args[_i - 1] = arguments[_i];
             }
             if (state in events) {
-                _this.emit.apply(_this, __spreadArray([events[state]], __read(args)));
+                _this.emit.apply(_this, __spreadArray([events[state]], __read(args), false));
             }
             var event = { name: state, group: 'signaling', level: eventsToLevels[_this.state] };
             if (state === 'closed') {
@@ -18685,7 +18735,7 @@ var TwilioConnection = /** @class */ (function (_super) {
         return _this;
     }
     TwilioConnection.prototype.toString = function () {
-        return "[TwilioConnection #" + this._instanceId + ": " + this._ws.url + "]";
+        return "[TwilioConnection #".concat(this._instanceId, ": ").concat(this._ws.url, "]");
     };
     /**
      * Close the {@link TwilioConnection}.
@@ -18722,7 +18772,7 @@ var TwilioConnection = /** @class */ (function (_super) {
             this.transition('closed', null, [CloseReason.LOCAL]);
         }
         else {
-            log.warn("Closed: " + code + " - " + reason);
+            log.warn("Closed: ".concat(code, " - ").concat(reason));
             if (code !== WS_CLOSE_BUSY_WAIT) {
                 this.transition('closed', null, [
                     wsCloseCodesToCloseReasons.get(code) || CloseReason.REMOTE
@@ -18746,7 +18796,7 @@ var TwilioConnection = /** @class */ (function (_super) {
             this.transition('early');
         }
         else if (this.state !== 'early') {
-            log.warn("Unexpected state \"" + this.state + "\" for connecting to the"
+            log.warn("Unexpected state \"".concat(this.state, "\" for connecting to the")
                 + ' TCMP server.');
             return;
         }
@@ -18757,7 +18807,7 @@ var TwilioConnection = /** @class */ (function (_super) {
         var openTimeout = this._options.openTimeout;
         // Add a timeout for getting the onopen event on the WebSocket (15 sec). After that, attempt to reconnect only if this is not the first attempt.
         this._openTimeout = new Timeout(function () {
-            var reason = "Failed to open in " + openTimeout + " ms";
+            var reason = "Failed to open in ".concat(openTimeout, " ms");
             _this._close({ code: WS_CLOSE_OPEN_TIMEOUT, reason: reason });
         }, openTimeout);
         ws.addEventListener('open', function () {
@@ -18769,7 +18819,7 @@ var TwilioConnection = /** @class */ (function (_super) {
             }
         });
         ws.addEventListener('message', function (message) {
-            log.debug("Incoming: " + message.data);
+            log.debug("Incoming: ".concat(message.data));
             try {
                 message = JSON.parse(message.data);
             }
@@ -18799,8 +18849,8 @@ var TwilioConnection = /** @class */ (function (_super) {
                     _this._handleWelcome(message);
                     break;
                 default:
-                    _this._log.debug("Unknown message type: " + message.type);
-                    _this.emit('error', new Error("Unknown message type: " + message.type));
+                    _this._log.debug("Unknown message type: ".concat(message.type));
+                    _this.emit('error', new Error("Unknown message type: ".concat(message.type)));
                     break;
             }
         });
@@ -18814,16 +18864,16 @@ var TwilioConnection = /** @class */ (function (_super) {
         var reason = _a.reason;
         var log = this._log;
         if (!['connecting', 'open'].includes(this.state)) {
-            log.warn("Unexpected state \"" + this.state + "\" for handling a \"bad\" message"
+            log.warn("Unexpected state \"".concat(this.state, "\" for handling a \"bad\" message")
                 + ' from the TCMP server.');
             return;
         }
         if (this.state === 'connecting') {
-            log.warn("Closing: " + WS_CLOSE_HELLO_FAILED + " - " + reason);
+            log.warn("Closing: ".concat(WS_CLOSE_HELLO_FAILED, " - ").concat(reason));
             this._close({ code: WS_CLOSE_HELLO_FAILED, reason: reason });
             return;
         }
-        log.debug("Error: " + reason);
+        log.debug("Error: ".concat(reason));
         this.emit('error', new Error(reason));
     };
     /**
@@ -18836,7 +18886,7 @@ var TwilioConnection = /** @class */ (function (_super) {
         var cookie = _a.cookie, keepAlive = _a.keepAlive, retryAfter = _a.retryAfter;
         var log = this._log;
         if (!['connecting', 'waiting'].includes(this.state)) {
-            log.warn("Unexpected state \"" + this.state + "\" for handling a \"busy\" message"
+            log.warn("Unexpected state \"".concat(this.state, "\" for handling a \"busy\" message")
                 + ' from the TCMP server.');
             return;
         }
@@ -18848,9 +18898,9 @@ var TwilioConnection = /** @class */ (function (_super) {
         }
         var reason = retryAfter < 0
             ? 'Received terminal "busy" message'
-            : "Received \"busy\" message, retrying after " + retryAfter + " ms";
+            : "Received \"busy\" message, retrying after ".concat(retryAfter, " ms");
         if (retryAfter < 0) {
-            log.warn("Closing: " + WS_CLOSE_SERVER_BUSY + " - " + reason);
+            log.warn("Closing: ".concat(WS_CLOSE_SERVER_BUSY, " - ").concat(reason));
             this._close({ code: WS_CLOSE_SERVER_BUSY, reason: reason });
             return;
         }
@@ -18862,7 +18912,7 @@ var TwilioConnection = /** @class */ (function (_super) {
             this._busyWaitTimeout = new Timeout(function () { return _this._startHandshake(); }, retryAfter);
         }
         else {
-            log.warn("Closing: " + WS_CLOSE_BUSY_WAIT + " - " + reason);
+            log.warn("Closing: ".concat(WS_CLOSE_BUSY_WAIT, " - ").concat(reason));
             this._close({ code: WS_CLOSE_BUSY_WAIT, reason: reason });
             this._busyWaitTimeout = new Timeout(function () { return _this._connect(); }, retryAfter);
         }
@@ -18874,7 +18924,7 @@ var TwilioConnection = /** @class */ (function (_super) {
      */
     TwilioConnection.prototype._handleHeartbeat = function () {
         if (this.state !== 'open') {
-            this._log.warn("Unexpected state \"" + this.state + "\" for handling a \"heartbeat\""
+            this._log.warn("Unexpected state \"".concat(this.state, "\" for handling a \"heartbeat\"")
                 + ' message from the TCMP server.');
             return;
         }
@@ -18890,9 +18940,9 @@ var TwilioConnection = /** @class */ (function (_super) {
         }
         var log = this._log;
         var maxConsecutiveMissedHeartbeats = this._options.maxConsecutiveMissedHeartbeats;
-        log.debug("Consecutive heartbeats missed: " + maxConsecutiveMissedHeartbeats);
-        var reason = "Missed " + maxConsecutiveMissedHeartbeats + " \"heartbeat\" messages";
-        log.warn("Closing: " + WS_CLOSE_HEARTBEATS_MISSED + " - " + reason);
+        log.debug("Consecutive heartbeats missed: ".concat(maxConsecutiveMissedHeartbeats));
+        var reason = "Missed ".concat(maxConsecutiveMissedHeartbeats, " \"heartbeat\" messages");
+        log.warn("Closing: ".concat(WS_CLOSE_HEARTBEATS_MISSED, " - ").concat(reason));
         this._close({ code: WS_CLOSE_HEARTBEATS_MISSED, reason: reason });
     };
     /**
@@ -18903,7 +18953,7 @@ var TwilioConnection = /** @class */ (function (_super) {
     TwilioConnection.prototype._handleMessage = function (_a) {
         var body = _a.body;
         if (this.state !== 'open') {
-            this._log.warn("Unexpected state \"" + this.state + "\" for handling a \"msg\" message"
+            this._log.warn("Unexpected state \"".concat(this.state, "\" for handling a \"msg\" message")
                 + ' from the TCMP server.');
             return;
         }
@@ -18919,7 +18969,7 @@ var TwilioConnection = /** @class */ (function (_super) {
         var negotiatedTimeout = _a.negotiatedTimeout;
         var log = this._log;
         if (!['connecting', 'waiting'].includes(this.state)) {
-            log.warn("Unexpected state \"" + this.state + "\" for handling a \"welcome\""
+            log.warn("Unexpected state \"".concat(this.state, "\" for handling a \"welcome\"")
                 + ' message from the TCMP server.');
             return;
         }
@@ -18947,12 +18997,12 @@ var TwilioConnection = /** @class */ (function (_super) {
         var log = this._log;
         if (this._hellosLeft <= 0) {
             var reason = 'All handshake attempts failed';
-            log.warn("Closing: " + WS_CLOSE_WELCOME_TIMEOUT + " - " + reason);
+            log.warn("Closing: ".concat(WS_CLOSE_WELCOME_TIMEOUT, " - ").concat(reason));
             this._close({ code: WS_CLOSE_WELCOME_TIMEOUT, reason: reason });
             return;
         }
         var maxConsecutiveFailedHellos = this._options.maxConsecutiveFailedHellos;
-        log.warn("Handshake attempt " + (maxConsecutiveFailedHellos - this._hellosLeft) + " failed");
+        log.warn("Handshake attempt ".concat(maxConsecutiveFailedHellos - this._hellosLeft, " failed"));
         this._startHandshake();
     };
     /**
@@ -18965,7 +19015,7 @@ var TwilioConnection = /** @class */ (function (_super) {
         var WebSocket = this._options.WebSocket;
         if (readyState === WebSocket.OPEN) {
             var data = JSON.stringify(message);
-            this._log.debug("Outgoing: " + data);
+            this._log.debug("Outgoing: ".concat(data));
             try {
                 this._ws.send(data);
                 if (this._sendHeartbeatTimeout) {
@@ -18975,7 +19025,7 @@ var TwilioConnection = /** @class */ (function (_super) {
             }
             catch (error) {
                 var reason = 'Failed to send message';
-                this._log.warn("Closing: " + WS_CLOSE_SEND_FAILED + " - " + reason);
+                this._log.warn("Closing: ".concat(WS_CLOSE_SEND_FAILED, " - ").concat(reason));
                 this._close({ code: WS_CLOSE_SEND_FAILED, reason: reason });
             }
         }
@@ -19190,10 +19240,14 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-var __spreadArray = (this && this.__spreadArray) || function (to, from) {
-    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
-        to[j] = from[i];
-    return to;
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
 /**
  * A Promise that can be canceled with {@link CancelablePromise#cancel}.
@@ -19285,7 +19339,7 @@ var CancelablePromise = /** @class */ (function () {
         var args = [].slice.call(arguments);
         var promise = this._promise;
         return new CancelablePromise(function onCreate(resolve, reject) {
-            promise.catch.apply(promise, __spreadArray([], __read(args))).then(resolve, reject);
+            promise.catch.apply(promise, __spreadArray([], __read(args), false)).then(resolve, reject);
         }, this._onCancel);
     };
     /**
@@ -19297,7 +19351,7 @@ var CancelablePromise = /** @class */ (function () {
         var args = [].slice.call(arguments);
         var promise = this._promise;
         return new CancelablePromise(function onCreate(resolve, reject) {
-            promise.then.apply(promise, __spreadArray([], __read(args))).then(resolve, reject);
+            promise.then.apply(promise, __spreadArray([], __read(args), false)).then(resolve, reject);
         }, this._onCancel);
     };
     return CancelablePromise;
@@ -19314,8 +19368,8 @@ module.exports.DEFAULT_LOGGER_NAME = 'twilio-video';
 module.exports.WS_SERVER = function (environment, region) {
     region = region === 'gll' ? 'global' : encodeURIComponent(region);
     return environment === 'prod'
-        ? "wss://" + region + ".vss.twilio.com/signaling"
-        : "wss://" + region + ".vss." + environment + ".twilio.com/signaling";
+        ? "wss://".concat(region, ".vss.twilio.com/signaling")
+        : "wss://".concat(region, ".vss.").concat(environment, ".twilio.com/signaling");
 };
 module.exports.PUBLISH_MAX_ATTEMPTS = 5;
 module.exports.PUBLISH_BACKOFF_JITTER = 10;
@@ -19333,16 +19387,16 @@ function article(word) {
 }
 module.exports.typeErrors = {
     ILLEGAL_INVOKE: function (name, context) {
-        return new TypeError("Illegal call to " + name + ": " + context);
+        return new TypeError("Illegal call to ".concat(name, ": ").concat(context));
     },
     INVALID_TYPE: function (name, type) {
-        return new TypeError(name + " must be " + article(type) + " " + type);
+        return new TypeError("".concat(name, " must be ").concat(article(type), " ").concat(type));
     },
     INVALID_VALUE: function (name, values) {
-        return new RangeError(name + " must be one of " + values.join(', '));
+        return new RangeError("".concat(name, " must be one of ").concat(values.join(', ')));
     },
     REQUIRED_ARGUMENT: function (name) {
-        return new TypeError(name + " must be specified");
+        return new TypeError("".concat(name, " must be specified"));
     }
 };
 module.exports.DEFAULT_FRAME_RATE = 24;
@@ -19796,10 +19850,14 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-var __spreadArray = (this && this.__spreadArray) || function (to, from) {
-    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
-        to[j] = from[i];
-    return to;
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
 var constants = require('./constants');
 var E = constants.typeErrors, trackPriority = constants.trackPriority;
@@ -19860,8 +19918,8 @@ function deprecateEvents(name, emitter, events, log) {
     var warningsShown = new Set();
     emitter.on('newListener', function newListener(event) {
         if (events.has(event) && !warningsShown.has(event)) {
-            log.deprecated(name + "#" + event + " has been deprecated and scheduled for removal in twilio-video.js@2.0.0." + (events.get(event)
-                ? " Use " + name + "#" + events.get(event) + " instead."
+            log.deprecated("".concat(name, "#").concat(event, " has been deprecated and scheduled for removal in twilio-video.js@2.0.0.").concat(events.get(event)
+                ? " Use ".concat(name, "#").concat(events.get(event), " instead.")
                 : ''));
             warningsShown.add(event);
         }
@@ -19978,12 +20036,12 @@ function promiseFromEvents(operation, eventEmitter, successEvent, failureEvent) 
             if (failureEvent) {
                 eventEmitter.removeListener(failureEvent, onFailure);
             }
-            resolve.apply(void 0, __spreadArray([], __read(args)));
+            resolve.apply(void 0, __spreadArray([], __read(args), false));
         }
         function onFailure() {
             var args = [].slice.call(arguments);
             eventEmitter.removeListener(successEvent, onSuccess);
-            reject.apply(void 0, __spreadArray([], __read(args)));
+            reject.apply(void 0, __spreadArray([], __read(args), false));
         }
         eventEmitter.once(successEvent, onSuccess);
         if (failureEvent) {
@@ -20063,7 +20121,7 @@ function delegateMethod(source, wrapper, target, methodName) {
         for (var _i = 0; _i < arguments.length; _i++) {
             args[_i] = arguments[_i];
         }
-        return (_a = this[target])[methodName].apply(_a, __spreadArray([], __read(args)));
+        return (_a = this[target])[methodName].apply(_a, __spreadArray([], __read(args), false));
     };
 }
 /**
@@ -20158,7 +20216,7 @@ function proxyProperty(source, wrapper, target, propertyName) {
             for (var _i = 0; _i < arguments.length; _i++) {
                 args[_i] = arguments[_i];
             }
-            wrapper.dispatchEvent.apply(wrapper, __spreadArray([], __read(args)));
+            wrapper.dispatchEvent.apply(wrapper, __spreadArray([], __read(args), false));
         });
         return;
     }
@@ -20211,7 +20269,7 @@ function buildLogLevels(logLevel) {
  */
 function trackClass(track, local) {
     local = local ? 'Local' : '';
-    return local + (track.kind || '').replace(/\w{1}/, function (m) { return m.toUpperCase(); }) + "Track";
+    return "".concat(local + (track.kind || '').replace(/\w{1}/, function (m) { return m.toUpperCase(); }), "Track");
 }
 /**
  * Get the {@link TrackPublication}'s derived class name
@@ -20221,7 +20279,7 @@ function trackClass(track, local) {
  */
 function trackPublicationClass(publication, local) {
     local = local ? 'Local' : '';
-    return local + (publication.kind || '').replace(/\w{1}/, function (m) { return m.toUpperCase(); }) + "TrackPublication";
+    return "".concat(local + (publication.kind || '').replace(/\w{1}/, function (m) { return m.toUpperCase(); }), "TrackPublication");
 }
 /**
  * Sets all underscore-prefixed properties on `object` non-enumerable.
@@ -20253,7 +20311,7 @@ function hidePrivateAndCertainPublicPropertiesInClass(klass, props) {
             for (var _i = 0; _i < arguments.length; _i++) {
                 args[_i] = arguments[_i];
             }
-            var _this = _super.apply(this, __spreadArray([], __read(args))) || this;
+            var _this = _super.apply(this, __spreadArray([], __read(args), false)) || this;
             hidePrivateProperties(_this);
             hidePublicProperties(_this, props);
             return _this;
@@ -20301,7 +20359,7 @@ function arrayToJSON(array) {
  * @returns {Array<*>}
  */
 function setToJSON(set) {
-    return arrayToJSON(__spreadArray([], __read(set)));
+    return arrayToJSON(__spreadArray([], __read(set), false));
 }
 /**
  * Convert a Map from strings to values to an object of JSON values by calling
@@ -20310,7 +20368,7 @@ function setToJSON(set) {
  * @returns {object}
  */
 function mapToJSON(map) {
-    return __spreadArray([], __read(map.entries())).reduce(function (json, _a) {
+    return __spreadArray([], __read(map.entries()), false).reduce(function (json, _a) {
         var _b;
         var _c = __read(_a, 2), key = _c[0], value = _c[1];
         return Object.assign((_b = {}, _b[key] = valueToJSON(value), _b), json);
@@ -20666,7 +20724,7 @@ var InsightsPublisher = /** @class */ (function (_super) {
     function InsightsPublisher(token, sdkName, sdkVersion, environment, realm, options) {
         var _this = _super.call(this) || this;
         options = Object.assign({
-            gateway: createGateway(environment, realm) + "/v1/VideoEvents",
+            gateway: "".concat(createGateway(environment, realm), "/v1/VideoEvents"),
             maxReconnectAttempts: MAX_RECONNECT_ATTEMPTS,
             reconnectIntervalMs: RECONNECT_INTERVAL_MS,
             userAgent: getUserAgent(),
@@ -20800,7 +20858,7 @@ function connect(publisher, token, sdkName, sdkVersion, roomSid, participantSid,
             publisher.emit('disconnected');
             return;
         }
-        publisher.emit('disconnected', new Error("WebSocket Error " + event.code + ": " + event.reason));
+        publisher.emit('disconnected', new Error("WebSocket Error ".concat(event.code, ": ").concat(event.reason)));
     });
     ws.addEventListener('message', function (message) {
         handleConnectResponse(publisher, JSON.parse(message.data), options);
@@ -20828,8 +20886,8 @@ function connect(publisher, token, sdkName, sdkVersion, roomSid, participantSid,
  * @returns {string}
  */
 function createGateway(environment, realm) {
-    return environment === 'prod' ? "wss://sdkgw." + realm + ".twilio.com"
-        : "wss://sdkgw." + environment + "-" + realm + ".twilio.com";
+    return environment === 'prod' ? "wss://sdkgw.".concat(realm, ".twilio.com")
+        : "wss://sdkgw.".concat(environment, "-").concat(realm, ".twilio.com");
 }
 /**
  * Handle connect response from the Insights gateway.
@@ -21023,10 +21081,14 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-var __spreadArray = (this && this.__spreadArray) || function (to, from) {
-    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
-        to[j] = from[i];
-    return to;
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
 var defaultGetLogger = require('../vendor/loglevel').getLogger;
 var constants = require('./constants');
@@ -21085,7 +21147,7 @@ var Log = /** @class */ (function () {
                 get: function get() {
                     var name = loggerName && typeof loggerName === 'string' ? loggerName : DEFAULT_LOGGER_NAME;
                     if (!this._logLevelsEqual) {
-                        name = name + "-" + moduleName;
+                        name = "".concat(name, "-").concat(moduleName);
                     }
                     return name;
                 }
@@ -21171,7 +21233,7 @@ var Log = /** @class */ (function () {
         }
         name = name.toLowerCase();
         var prefix = [new Date().toISOString(), name, this.name];
-        (this._logger[name] || function noop() { }).apply(void 0, __spreadArray([], __read(prefix.concat(messages))));
+        (this._logger[name] || function noop() { }).apply(void 0, __spreadArray([], __read(prefix.concat(messages)), false));
         return this;
     };
     /**
@@ -21540,7 +21602,7 @@ function createBLine(modifier, maxBitrate) {
     if (!maxBitrate) {
         return null;
     }
-    return "\r\nb=" + modifier + ":" + (modifier === 'AS'
+    return "\r\nb=".concat(modifier, ":").concat(modifier === 'AS'
         ? Math.round((maxBitrate + RTCP_BITRATE) / 950)
         : maxBitrate);
 }
@@ -21575,7 +21637,7 @@ function createMidToMediaSectionMap(sdp) {
  */
 function createPtToCodecName(mediaSection) {
     return getPayloadTypesInMediaSection(mediaSection).reduce(function (ptToCodecName, pt) {
-        var rtpmapPattern = new RegExp("a=rtpmap:" + pt + " ([^/]+)");
+        var rtpmapPattern = new RegExp("a=rtpmap:".concat(pt, " ([^/]+)"));
         var matches = mediaSection.match(rtpmapPattern);
         var codecName = matches
             ? matches[1].toLowerCase()
@@ -21594,7 +21656,7 @@ function createPtToCodecName(mediaSection) {
 function getFmtpAttributesForPt(pt, mediaSection) {
     // In "a=fmtp:<pt> <name>=<value>[;<name>=<value>]*", the regex matches the codec
     // profile parameters expressed as name/value pairs separated by ";".
-    var fmtpRegex = new RegExp("^a=fmtp:" + pt + " (.+)$", 'm');
+    var fmtpRegex = new RegExp("^a=fmtp:".concat(pt, " (.+)$"), 'm');
     var matches = mediaSection.match(fmtpRegex);
     return matches && matches[1].split(';').reduce(function (attrs, nvPair) {
         var _a = __read(nvPair.split('='), 2), name = _a[0], value = _a[1];
@@ -21620,9 +21682,9 @@ function getMidForMediaSection(mediaSection) {
  * @returns {Array<string>} mediaSections
  */
 function getMediaSections(sdp, kind, direction) {
-    return sdp.replace(/\r\n\r\n$/, '\r\n').split('\r\nm=').slice(1).map(function (mediaSection) { return "m=" + mediaSection; }).filter(function (mediaSection) {
-        var kindPattern = new RegExp("m=" + (kind || '.*'), 'gm');
-        var directionPattern = new RegExp("a=" + (direction || '.*'), 'gm');
+    return sdp.replace(/\r\n\r\n$/, '\r\n').split('\r\nm=').slice(1).map(function (mediaSection) { return "m=".concat(mediaSection); }).filter(function (mediaSection) {
+        var kindPattern = new RegExp("m=".concat(kind || '.*'), 'gm');
+        var directionPattern = new RegExp("a=".concat(direction || '.*'), 'gm');
         return kindPattern.test(mediaSection) && directionPattern.test(mediaSection);
     });
 }
@@ -21672,7 +21734,7 @@ function setBitrateInMediaSection(modifier, maxBitrate, section) {
     var bLinePattern = /\r\nb=(AS|TIAS):([0-9]+)/;
     var bLineMatched = section.match(bLinePattern);
     if (!bLineMatched) {
-        return section.replace(/(\r\n)?$/, bLine + "$1");
+        return section.replace(/(\r\n)?$/, "".concat(bLine, "$1"));
     }
     var maxBitrateMatched = parseInt(bLineMatched[2], 10);
     maxBitrate = maxBitrate || Infinity;
@@ -21959,8 +22021,8 @@ function unifiedPlanAddOrRewriteTrackIds(sdp, midsToTrackIds) {
         // If the a=msid: line contains the "appdata" field, then replace it with the Track ID,
         // otherwise append the Track ID.
         var _a = __read(attributes.split(' '), 2), msid = _a[0], trackIdToRewrite = _a[1];
-        var msidRegex = new RegExp("msid:" + msid + (trackIdToRewrite ? " " + trackIdToRewrite : '') + "$", 'gm');
-        return mediaSection.replace(msidRegex, "msid:" + msid + " " + trackId);
+        var msidRegex = new RegExp("msid:".concat(msid).concat(trackIdToRewrite ? " ".concat(trackIdToRewrite) : '', "$"), 'gm');
+        return mediaSection.replace(msidRegex, "msid:".concat(msid, " ").concat(trackId));
     })).join('\r\n');
 }
 /**
@@ -22011,7 +22073,7 @@ function disableRtx(sdp) {
             /^a=rtpmap:.+ rtx\/.+$/,
             /^a=ssrc-group:.+$/
         ].concat(rtxSSRC
-            ? [new RegExp("^a=ssrc:" + rtxSSRC + " .+$")]
+            ? [new RegExp("^a=ssrc:".concat(rtxSSRC, " .+$"))]
             : []);
         mediaSection = mediaSection.split('\r\n')
             .filter(function (line) { return filterRegexes.every(function (regex) { return !regex.test(line); }); })
@@ -22029,9 +22091,9 @@ function disableRtx(sdp) {
 function generateFmtpLineFromPtAndAttributes(pt, fmtpAttrs) {
     var serializedFmtpAttrs = Object.entries(fmtpAttrs).map(function (_a) {
         var _b = __read(_a, 2), name = _b[0], value = _b[1];
-        return name + "=" + value;
+        return "".concat(name, "=").concat(value);
     }).join(';');
-    return "a=fmtp:" + pt + " " + serializedFmtpAttrs;
+    return "a=fmtp:".concat(pt, " ").concat(serializedFmtpAttrs);
 }
 /**
  * Enable DTX for opus in the m= sections for the given MIDs.`
@@ -22177,10 +22239,10 @@ function deleteDuplicateRtxPts(mediaSection, ptToCodecName) {
     // Chrome rejects the SDP. We workaround this by deleting duplicate
     // "rtx" mappings found in SDP.
     return Array.from(ptToCodecName.keys()).reduce(function (section, pt) {
-        var rtpmapRegex = new RegExp("^a=rtpmap:" + pt + " rtx.+$", 'gm');
+        var rtpmapRegex = new RegExp("^a=rtpmap:".concat(pt, " rtx.+$"), 'gm');
         return (section.match(rtpmapRegex) || []).slice(ptToCodecName.get(pt) === 'rtx' ? 1 : 0).reduce(function (section, rtpmap) {
-            var rtpmapRegex = new RegExp("\r\n" + rtpmap);
-            var fmtpmapRegex = new RegExp("\r\na=fmtp:" + pt + " apt=[0-9]+");
+            var rtpmapRegex = new RegExp("\r\n".concat(rtpmap));
+            var fmtpmapRegex = new RegExp("\r\na=fmtp:".concat(pt, " apt=[0-9]+"));
             return section.replace(rtpmapRegex, '').replace(fmtpmapRegex, '');
         }, section);
     }, mediaSection);
@@ -22206,7 +22268,7 @@ function createCodecNameToPts(ptToCodecName) {
  */
 function createRtxPtToAssociatedPt(mediaSection, ptToCodecName, rtxPts, invalidRtxPts) {
     return Array.from(rtxPts).reduce(function (rtxPtToAssociatedPt, rtxPt) {
-        var fmtpPattern = new RegExp("a=fmtp:" + rtxPt + " apt=(\\d+)");
+        var fmtpPattern = new RegExp("a=fmtp:".concat(rtxPt, " apt=(\\d+)"));
         var matches = mediaSection.match(fmtpPattern);
         if (!matches) {
             invalidRtxPts.add(rtxPt);
@@ -22261,7 +22323,7 @@ function createAssociatedPtToRtxPt(rtxPtToAssociatedPt, invalidRtxPts) {
  * @returns {string} newMediaSection
  */
 function deleteFmtpAttributesForRtxPt(mediaSection, rtxPt) {
-    var pattern = new RegExp("a=fmtp:" + rtxPt + ".*\r\n", 'gm');
+    var pattern = new RegExp("a=fmtp:".concat(rtxPt, ".*\r\n"), 'gm');
     return mediaSection.replace(pattern, '');
 }
 /**
@@ -22270,7 +22332,7 @@ function deleteFmtpAttributesForRtxPt(mediaSection, rtxPt) {
  * @returns {string} newMediaSection
  */
 function deleteRtpmapAttributesForRtxPt(mediaSection, rtxPt) {
-    var pattern = new RegExp("a=rtpmap:" + rtxPt + ".*\r\n", 'gm');
+    var pattern = new RegExp("a=rtpmap:".concat(rtxPt, ".*\r\n"), 'gm');
     return mediaSection.replace(pattern, '');
 }
 /**
@@ -22281,8 +22343,8 @@ function deleteRtpmapAttributesForRtxPt(mediaSection, rtxPt) {
  */
 function addFmtpAttributeForRtxPt(mediaSection, rtxPt, pt) {
     return mediaSection.endsWith('\r\n')
-        ? mediaSection + "a=fmtp:" + rtxPt + " apt=" + pt + "\r\n"
-        : mediaSection + "\r\na=fmtp:" + rtxPt + " apt=" + pt;
+        ? "".concat(mediaSection, "a=fmtp:").concat(rtxPt, " apt=").concat(pt, "\r\n")
+        : "".concat(mediaSection, "\r\na=fmtp:").concat(rtxPt, " apt=").concat(pt);
 }
 module.exports = workaround;
 
@@ -22408,12 +22470,12 @@ var TrackAttributes = /** @class */ (function () {
         var simSSRCs = Array.from(this.primarySSRCs.values());
         var ssrcs = rtxPairs.length ? flatMap(rtxPairs) : simSSRCs;
         var attrLines = flatMap(ssrcs, function (ssrc) { return [
-            "a=ssrc:" + ssrc + " cname:" + _this.cName,
-            "a=ssrc:" + ssrc + " msid:" + _this.streamId + " " + _this.trackId
+            "a=ssrc:".concat(ssrc, " cname:").concat(_this.cName),
+            "a=ssrc:".concat(ssrc, " msid:").concat(_this.streamId, " ").concat(_this.trackId)
         ]; });
-        var rtxPairLines = rtxPairs.map(function (rtxPair) { return "a=ssrc-group:FID " + rtxPair.join(' '); });
+        var rtxPairLines = rtxPairs.map(function (rtxPair) { return "a=ssrc-group:FID ".concat(rtxPair.join(' ')); });
         var simGroupLines = [
-            "a=ssrc-group:SIM " + simSSRCs.join(' ')
+            "a=ssrc-group:SIM ".concat(simSSRCs.join(' '))
         ];
         return rtxPairLines.concat(attrLines).concat(simGroupLines);
     };
@@ -22449,7 +22511,7 @@ function getSimulcastSSRCs(section) {
  * @param {string} - {@link SSRC} attribute value
  */
 function getSSRCAttribute(section, ssrc, attribute) {
-    var pattern = "a=ssrc:" + ssrc + " " + attribute + ":(.+)";
+    var pattern = "a=ssrc:".concat(ssrc, " ").concat(attribute, ":(.+)");
     return section.match(new RegExp(pattern))[1];
 }
 /**
@@ -24024,10 +24086,14 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-var __spreadArray = (this && this.__spreadArray) || function (to, from) {
-    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
-        to[j] = from[i];
-    return to;
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
 /**
  * @extends Error
@@ -24045,7 +24111,7 @@ var TwilioError = /** @class */ (function (_super) {
     function TwilioError(code) {
         var _this = this;
         var args = [].slice.call(arguments, 1);
-        _this = _super.apply(this, __spreadArray([], __read(args))) || this;
+        _this = _super.apply(this, __spreadArray([], __read(args), false)) || this;
         Object.setPrototypeOf(_this, TwilioError.prototype);
         var error = Error.apply(_this, args);
         error.name = 'TwilioError';
@@ -24066,8 +24132,8 @@ var TwilioError = /** @class */ (function (_super) {
      * @returns {string}
      */
     TwilioError.prototype.toString = function () {
-        var message = this.message ? ": " + this.message : '';
-        return this.name + " " + this.code + message;
+        var message = this.message ? ": ".concat(this.message) : '';
+        return "".concat(this.name, " ").concat(this.code).concat(message);
     };
     return TwilioError;
 }(Error));
@@ -24160,13 +24226,13 @@ function validateObject(object, name, propChecks) {
         }
         var value = object[prop];
         if (type && typeof value !== type) {
-            return E.INVALID_TYPE(name + "." + prop, type);
+            return E.INVALID_TYPE("".concat(name, ".").concat(prop), type);
         }
         if (type === 'number' && isNaN(value)) {
-            return E.INVALID_TYPE(name + "." + prop, type);
+            return E.INVALID_TYPE("".concat(name, ".").concat(prop), type);
         }
         if (Array.isArray(values) && !values.includes(value)) {
-            return E.INVALID_VALUE(name + "." + prop, values);
+            return E.INVALID_VALUE("".concat(name, ".").concat(prop), values);
         }
         return error;
     }, null);
@@ -24180,7 +24246,7 @@ function validateRenderDimensions(renderDimensions) {
     var name = 'options.bandwidthProfile.video.renderDimensions';
     var error = validateObject(renderDimensions, name);
     return renderDimensions ? error || Object.values(trackPriority).reduce(function (error, prop) {
-        return error || validateObject(renderDimensions[prop], name + "." + prop, [
+        return error || validateObject(renderDimensions[prop], "".concat(name, ".").concat(prop), [
             { prop: 'height', type: 'number' },
             { prop: 'width', type: 'number' }
         ]);
@@ -24619,7 +24685,7 @@ function workaround(log, getUserMedia, constraints, n, timeout) {
 to get a new one, but we\'ve run out of retries; returning it anyway.');
                     return stream;
                 }
-                log.warn("Got a silent audio MediaStreamTrack. Stopping all MediaStreamTracks and calling getUserMedia again. This is retry #" + ++retry + ".");
+                log.warn("Got a silent audio MediaStreamTrack. Stopping all MediaStreamTracks and calling getUserMedia again. This is retry #".concat(++retry, "."));
                 stream.getTracks().forEach(function (track) { return track.stop(); });
                 n--;
                 return doWorkaround();
@@ -27801,54 +27867,41 @@ exports.updateUnifiedPlanTrackIdsToSSRCs = updateUnifiedPlanTrackIdsToSSRCs;
 
 },{"./":163}],166:[function(require,module,exports){
 module.exports={
-  "_from": "@twilio/webrtc@4.4.0",
-  "_id": "@twilio/webrtc@4.4.0",
-  "_inBundle": false,
-  "_integrity": "sha512-UJ4jZVpnG6lS4RASSuzTIczg6FX6N2RjBj6Pf1/jI5MGznrW7p2PDJ8Ju/ITj4Mc65G1a7i9U9tEfvmSskpHvg==",
-  "_location": "/@twilio/webrtc",
-  "_phantomChildren": {},
-  "_requested": {
-    "type": "version",
-    "registry": true,
-    "raw": "@twilio/webrtc@4.4.0",
-    "name": "@twilio/webrtc",
-    "escapedName": "@twilio%2fwebrtc",
-    "scope": "@twilio",
-    "rawSpec": "4.4.0",
-    "saveSpec": null,
-    "fetchSpec": "4.4.0"
+  "name": "@twilio/webrtc",
+  "version": "4.4.0",
+  "description": "WebRTC-related APIs and shims used by twilio-video.js",
+  "scripts": {
+    "build": "npm-run-all clean lint test",
+    "clean": "rimraf coverage",
+    "lint": "eslint ./lib",
+    "test:unit": "istanbul cover node_modules/mocha/bin/_mocha -- ./test/unit/index.js",
+    "test:integration:native": "karma start karma/integration.conf.js",
+    "test:integration:adapter": "karma start karma/integration.adapter.conf.js",
+    "test:integration": "npm-run-all test:integration:*",
+    "test": "npm-run-all test:*"
   },
-  "_requiredBy": [
-    "/"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/twilio/twilio-webrtc.js.git"
+  },
+  "keywords": [
+    "shim",
+    "twilio",
+    "video",
+    "webrtc"
   ],
-  "_resolved": "https://registry.npmjs.org/@twilio/webrtc/-/webrtc-4.4.0.tgz",
-  "_shasum": "db465f1a6c4dbaa1522175212c7fe0e11f84e380",
-  "_spec": "@twilio/webrtc@4.4.0",
-  "_where": "/home/circleci/project",
-  "author": {
-    "name": "Manjesh Malavalli",
-    "email": "mmalavalli@twilio.com"
-  },
+  "author": "Manjesh Malavalli <mmalavalli@twilio.com>",
+  "contributors": [
+    "Mark Roberts <mroberts@twilio.com>",
+    "Ryan Rowland <rrowland@twilio.com>",
+    "Makarand Patwardhan <mpatwardhan@twilio.com>"
+  ],
+  "license": "BSD-3-Clause",
+  "main": "./lib/index.js",
   "bugs": {
     "url": "https://github.com/twilio/twilio-webrtc.js/issues"
   },
-  "bundleDependencies": false,
-  "contributors": [
-    {
-      "name": "Mark Roberts",
-      "email": "mroberts@twilio.com"
-    },
-    {
-      "name": "Ryan Rowland",
-      "email": "rrowland@twilio.com"
-    },
-    {
-      "name": "Makarand Patwardhan",
-      "email": "mpatwardhan@twilio.com"
-    }
-  ],
-  "deprecated": false,
-  "description": "WebRTC-related APIs and shims used by twilio-video.js",
+  "homepage": "https://github.com/twilio/twilio-webrtc.js#readme",
   "devDependencies": {
     "browserify": "^14.4.0",
     "electron": "^5.0.0",
@@ -27869,37 +27922,12 @@ module.exports={
     "karma-spec-reporter": "0.0.31",
     "mocha": "^3.5.0",
     "npm-run-all": "^4.0.2",
+    "twilio-release-tool": "^1.0.0",
     "rimraf": "^2.6.1",
     "simple-git": "^2.4.0",
-    "twilio-release-tool": "^1.0.0",
     "watchify": "^3.9.0",
     "webrtc-adapter": "^6.4.8"
-  },
-  "homepage": "https://github.com/twilio/twilio-webrtc.js#readme",
-  "keywords": [
-    "shim",
-    "twilio",
-    "video",
-    "webrtc"
-  ],
-  "license": "BSD-3-Clause",
-  "main": "./lib/index.js",
-  "name": "@twilio/webrtc",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/twilio/twilio-webrtc.js.git"
-  },
-  "scripts": {
-    "build": "npm-run-all clean lint test",
-    "clean": "rimraf coverage",
-    "lint": "eslint ./lib",
-    "test": "npm-run-all test:*",
-    "test:integration": "npm-run-all test:integration:*",
-    "test:integration:adapter": "karma start karma/integration.adapter.conf.js",
-    "test:integration:native": "karma start karma/integration.conf.js",
-    "test:unit": "istanbul cover node_modules/mocha/bin/_mocha -- ./test/unit/index.js"
-  },
-  "version": "4.4.0"
+  }
 }
 
 },{}],167:[function(require,module,exports){
@@ -27920,10 +27948,12 @@ var possibleNames = [
 	'Uint8ClampedArray'
 ];
 
+var g = typeof globalThis === 'undefined' ? global : globalThis;
+
 module.exports = function availableTypedArrays() {
 	var out = [];
 	for (var i = 0; i < possibleNames.length; i++) {
-		if (typeof global[possibleNames[i]] === 'function') {
+		if (typeof g[possibleNames[i]] === 'function') {
 			out[out.length] = possibleNames[i];
 		}
 	}
@@ -28449,7 +28479,7 @@ if ($defineProperty) {
 
 var GetIntrinsic = require('get-intrinsic');
 
-var $gOPD = GetIntrinsic('%Object.getOwnPropertyDescriptor%');
+var $gOPD = GetIntrinsic('%Object.getOwnPropertyDescriptor%', true);
 if ($gOPD) {
 	try {
 		$gOPD([], 'length');
@@ -29567,6 +29597,7 @@ var callBound = require('call-bind/callBound');
 var $toString = callBound('Object.prototype.toString');
 var hasToStringTag = require('has-tostringtag/shams')();
 
+var g = typeof globalThis === 'undefined' ? global : globalThis;
 var typedArrays = availableTypedArrays();
 
 var $indexOf = callBound('Array.prototype.indexOf', true) || function indexOf(array, value) {
@@ -29583,7 +29614,7 @@ var gOPD = require('es-abstract/helpers/getOwnPropertyDescriptor');
 var getPrototypeOf = Object.getPrototypeOf; // require('getprototypeof');
 if (hasToStringTag && gOPD && getPrototypeOf) {
 	forEach(typedArrays, function (typedArray) {
-		var arr = new global[typedArray]();
+		var arr = new g[typedArray]();
 		if (Symbol.toStringTag in arr) {
 			var proto = getPrototypeOf(arr);
 			var descriptor = gOPD(proto, Symbol.toStringTag);
@@ -31007,6 +31038,7 @@ var callBound = require('call-bind/callBound');
 var $toString = callBound('Object.prototype.toString');
 var hasToStringTag = require('has-tostringtag/shams')();
 
+var g = typeof globalThis === 'undefined' ? global : globalThis;
 var typedArrays = availableTypedArrays();
 
 var $slice = callBound('String.prototype.slice');
@@ -31015,8 +31047,8 @@ var gOPD = require('es-abstract/helpers/getOwnPropertyDescriptor');
 var getPrototypeOf = Object.getPrototypeOf; // require('getprototypeof');
 if (hasToStringTag && gOPD && getPrototypeOf) {
 	forEach(typedArrays, function (typedArray) {
-		if (typeof global[typedArray] === 'function') {
-			var arr = new global[typedArray]();
+		if (typeof g[typedArray] === 'function') {
+			var arr = new g[typedArray]();
 			if (Symbol.toStringTag in arr) {
 				var proto = getPrototypeOf(arr);
 				var descriptor = gOPD(proto, Symbol.toStringTag);

@@ -110,7 +110,7 @@ var Signaling = /** @class */ (function (_super) {
                 case 'open':
                     return _this._close(key);
                 default:
-                    throw new Error("Unexpected Signaling state \"" + _this.state + "\"");
+                    throw new Error("Unexpected Signaling state \"".concat(_this.state, "\""));
             }
         });
     };
@@ -135,7 +135,7 @@ var Signaling = /** @class */ (function (_super) {
                     self.releaseLockCompletely(key);
                     return self._connect(localParticipant, token, encodingParameters, preferredCodecs, options);
                 default:
-                    throw new Error("Unexpected Signaling state \"" + self.state + "\"");
+                    throw new Error("Unexpected Signaling state \"".concat(self.state, "\""));
             }
         });
     };
@@ -159,7 +159,7 @@ var Signaling = /** @class */ (function (_super) {
                 case 'open':
                     return _this;
                 default:
-                    throw new Error("Unexpected Signaling state \"" + _this.state + "\"");
+                    throw new Error("Unexpected Signaling state \"".concat(_this.state, "\""));
             }
         });
     };

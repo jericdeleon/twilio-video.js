@@ -39,7 +39,7 @@ var RemoteVideoTrackPublication = /** @class */ (function (_super) {
         return _super.call(this, signaling, options) || this;
     }
     RemoteVideoTrackPublication.prototype.toString = function () {
-        return "[RemoteVideoTrackPublication #" + this._instanceId + ": " + this.trackSid + "]";
+        return "[RemoteVideoTrackPublication #".concat(this._instanceId, ": ").concat(this.trackSid, "]");
     };
     return RemoteVideoTrackPublication;
 }(RemoteTrackPublication));

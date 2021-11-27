@@ -133,8 +133,8 @@ var LocalParticipant = /** @class */ (function (_super) {
      */
     LocalParticipant.prototype._addLocalTrack = function (track, priority) {
         this._signaling.addTrack(track._trackSender, track.name, priority);
-        this._log.info("Added a new " + trackClass(track, true) + ":", track.id);
-        this._log.debug(trackClass(track, true) + ":", track);
+        this._log.info("Added a new ".concat(trackClass(track, true), ":"), track.id);
+        this._log.debug("".concat(trackClass(track, true), ":"), track);
     };
     /**
      * @private
@@ -146,8 +146,8 @@ var LocalParticipant = /** @class */ (function (_super) {
         var removedTrack = _super.prototype._removeTrack.call(this, track, id);
         if (removedTrack && this.state !== 'disconnected') {
             this._signaling.removeTrack(track._trackSender);
-            this._log.info("Removed a " + trackClass(track, true) + ":", track.id);
-            this._log.debug(trackClass(track, true) + ":", track);
+            this._log.info("Removed a ".concat(trackClass(track, true), ":"), track.id);
+            this._log.debug("".concat(trackClass(track, true), ":"), track);
         }
         return removedTrack;
     };
@@ -164,7 +164,7 @@ var LocalParticipant = /** @class */ (function (_super) {
         ]);
     };
     LocalParticipant.prototype.toString = function () {
-        return "[LocalParticipant #" + this._instanceId + (this.sid ? ": " + this.sid : '') + "]";
+        return "[LocalParticipant #".concat(this._instanceId).concat(this.sid ? ": ".concat(this.sid) : '', "]");
     };
     /**
      * @private
@@ -180,14 +180,14 @@ var LocalParticipant = /** @class */ (function (_super) {
             var trackSignaling = signaling.getPublication(localTrack._trackSender);
             if (trackSignaling) {
                 trackSignaling.disable();
-                log.debug("Disabled the " + trackClass(localTrack, true) + ":", localTrack.id);
+                log.debug("Disabled the ".concat(trackClass(localTrack, true), ":"), localTrack.id);
             }
         }
         function localTrackEnabled(localTrack) {
             var trackSignaling = signaling.getPublication(localTrack._trackSender);
             if (trackSignaling) {
                 trackSignaling.enable();
-                log.debug("Enabled the " + trackClass(localTrack, true) + ":", localTrack.id);
+                log.debug("Enabled the ".concat(trackClass(localTrack, true), ":"), localTrack.id);
             }
         }
         function localTrackStopped(localTrack) {
@@ -206,7 +206,7 @@ var LocalParticipant = /** @class */ (function (_super) {
             _this._addLocalTrack(track, trackPriority.PRIORITY_STANDARD);
             _this._getOrCreateLocalTrackPublication(track).catch(function (error) {
                 // Just log a warning for now.
-                log.warn("Failed to get or create LocalTrackPublication for " + track + ":", error);
+                log.warn("Failed to get or create LocalTrackPublication for ".concat(track, ":"), error);
             });
         });
         var self = this;
@@ -226,7 +226,7 @@ var LocalParticipant = /** @class */ (function (_super) {
                         track._trackSender.removeClone(trackSignaling._trackTransceiver);
                     }
                 });
-                log.info("LocalParticipant disconnected. Stopping " + self._tracksToStop.size + " automatically-acquired LocalTracks");
+                log.info("LocalParticipant disconnected. Stopping ".concat(self._tracksToStop.size, " automatically-acquired LocalTracks"));
                 self._tracksToStop.forEach(function (track) {
                     track.stop();
                 });
@@ -256,7 +256,7 @@ var LocalParticipant = /** @class */ (function (_super) {
         var self = this;
         var trackSignaling = this._signaling.getPublication(localTrack._trackSender);
         if (!trackSignaling) {
-            return Promise.reject(new Error("Unexpected error: The " + localTrack + " cannot be published"));
+            return Promise.reject(new Error("Unexpected error: The ".concat(localTrack, " cannot be published")));
         }
         function unpublish(publication) {
             self.unpublishTrack(publication.track);
@@ -266,7 +266,7 @@ var LocalParticipant = /** @class */ (function (_super) {
                 var error = trackSignaling.error;
                 if (error) {
                     trackSignaling.removeListener('updated', updated);
-                    log.warn("Failed to publish the " + trackClass(localTrack, true) + ": " + error.message);
+                    log.warn("Failed to publish the ".concat(trackClass(localTrack, true), ": ").concat(error.message));
                     self._removeTrack(localTrack, localTrack.id);
                     setTimeout(function () {
                         self.emit('trackPublicationFailed', error, localTrack);
@@ -276,7 +276,7 @@ var LocalParticipant = /** @class */ (function (_super) {
                 }
                 if (!self._tracks.has(localTrack.id)) {
                     trackSignaling.removeListener('updated', updated);
-                    reject(new Error("The " + localTrack + " was unpublished"));
+                    reject(new Error("The ".concat(localTrack, " was unpublished")));
                     return;
                 }
                 var sid = trackSignaling.sid;
@@ -478,7 +478,7 @@ var LocalParticipant = /** @class */ (function (_super) {
         ['local', 'remote'].forEach(function (prop) {
             if (prop in networkQualityConfiguration && (typeof networkQualityConfiguration[prop] !== 'number' || isNaN(networkQualityConfiguration[prop]))) {
                 // eslint-disable-next-line new-cap
-                throw E.INVALID_TYPE("networkQualityConfiguration." + prop, 'number');
+                throw E.INVALID_TYPE("networkQualityConfiguration.".concat(prop), 'number');
             }
         });
         this._signaling.setNetworkQualityConfiguration(networkQualityConfiguration);
@@ -504,7 +504,7 @@ var LocalParticipant = /** @class */ (function (_super) {
                     && typeof encodingParameters[prop] !== 'number'
                     && encodingParameters[prop] !== null) {
                     // eslint-disable-next-line new-cap
-                    throw E.INVALID_TYPE("encodingParameters." + prop, 'number, null or undefined');
+                    throw E.INVALID_TYPE("encodingParameters.".concat(prop), 'number, null or undefined');
                 }
             });
         }
@@ -537,7 +537,7 @@ var LocalParticipant = /** @class */ (function (_super) {
             return null;
         }
         var trackSignaling = this._signaling.getPublication(localTrack._trackSender);
-        trackSignaling.publishFailed(new Error("The " + localTrack + " was unpublished"));
+        trackSignaling.publishFailed(new Error("The ".concat(localTrack, " was unpublished")));
         localTrack = this._removeTrack(localTrack, localTrack.id);
         if (!localTrack) {
             return null;

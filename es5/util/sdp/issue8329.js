@@ -82,10 +82,10 @@ function deleteDuplicateRtxPts(mediaSection, ptToCodecName) {
     // Chrome rejects the SDP. We workaround this by deleting duplicate
     // "rtx" mappings found in SDP.
     return Array.from(ptToCodecName.keys()).reduce(function (section, pt) {
-        var rtpmapRegex = new RegExp("^a=rtpmap:" + pt + " rtx.+$", 'gm');
+        var rtpmapRegex = new RegExp("^a=rtpmap:".concat(pt, " rtx.+$"), 'gm');
         return (section.match(rtpmapRegex) || []).slice(ptToCodecName.get(pt) === 'rtx' ? 1 : 0).reduce(function (section, rtpmap) {
-            var rtpmapRegex = new RegExp("\r\n" + rtpmap);
-            var fmtpmapRegex = new RegExp("\r\na=fmtp:" + pt + " apt=[0-9]+");
+            var rtpmapRegex = new RegExp("\r\n".concat(rtpmap));
+            var fmtpmapRegex = new RegExp("\r\na=fmtp:".concat(pt, " apt=[0-9]+"));
             return section.replace(rtpmapRegex, '').replace(fmtpmapRegex, '');
         }, section);
     }, mediaSection);
@@ -111,7 +111,7 @@ function createCodecNameToPts(ptToCodecName) {
  */
 function createRtxPtToAssociatedPt(mediaSection, ptToCodecName, rtxPts, invalidRtxPts) {
     return Array.from(rtxPts).reduce(function (rtxPtToAssociatedPt, rtxPt) {
-        var fmtpPattern = new RegExp("a=fmtp:" + rtxPt + " apt=(\\d+)");
+        var fmtpPattern = new RegExp("a=fmtp:".concat(rtxPt, " apt=(\\d+)"));
         var matches = mediaSection.match(fmtpPattern);
         if (!matches) {
             invalidRtxPts.add(rtxPt);
@@ -166,7 +166,7 @@ function createAssociatedPtToRtxPt(rtxPtToAssociatedPt, invalidRtxPts) {
  * @returns {string} newMediaSection
  */
 function deleteFmtpAttributesForRtxPt(mediaSection, rtxPt) {
-    var pattern = new RegExp("a=fmtp:" + rtxPt + ".*\r\n", 'gm');
+    var pattern = new RegExp("a=fmtp:".concat(rtxPt, ".*\r\n"), 'gm');
     return mediaSection.replace(pattern, '');
 }
 /**
@@ -175,7 +175,7 @@ function deleteFmtpAttributesForRtxPt(mediaSection, rtxPt) {
  * @returns {string} newMediaSection
  */
 function deleteRtpmapAttributesForRtxPt(mediaSection, rtxPt) {
-    var pattern = new RegExp("a=rtpmap:" + rtxPt + ".*\r\n", 'gm');
+    var pattern = new RegExp("a=rtpmap:".concat(rtxPt, ".*\r\n"), 'gm');
     return mediaSection.replace(pattern, '');
 }
 /**
@@ -186,8 +186,8 @@ function deleteRtpmapAttributesForRtxPt(mediaSection, rtxPt) {
  */
 function addFmtpAttributeForRtxPt(mediaSection, rtxPt, pt) {
     return mediaSection.endsWith('\r\n')
-        ? mediaSection + "a=fmtp:" + rtxPt + " apt=" + pt + "\r\n"
-        : mediaSection + "\r\na=fmtp:" + rtxPt + " apt=" + pt;
+        ? "".concat(mediaSection, "a=fmtp:").concat(rtxPt, " apt=").concat(pt, "\r\n")
+        : "".concat(mediaSection, "\r\na=fmtp:").concat(rtxPt, " apt=").concat(pt);
 }
 module.exports = workaround;
 //# sourceMappingURL=issue8329.js.map

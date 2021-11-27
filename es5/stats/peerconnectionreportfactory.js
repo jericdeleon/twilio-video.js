@@ -15,10 +15,14 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-var __spreadArray = (this && this.__spreadArray) || function (to, from) {
-    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
-        to[j] = from[i];
-    return to;
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
 var __values = (this && this.__values) || function(o) {
     var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
@@ -115,10 +119,10 @@ var PeerConnectionReportFactory = /** @class */ (function () {
             ? updateFirefox(this)
             : updateChrome(this);
         return updatePromise.then(function () {
-            var audioSenderReportFactories = __spreadArray([], __read(_this.audio.send.values()));
-            var videoSenderReportFactories = __spreadArray([], __read(_this.video.send.values()));
-            var audioReceiverReportFactories = __spreadArray([], __read(_this.audio.recv.values()));
-            var videoReceiverReportFactories = __spreadArray([], __read(_this.video.recv.values()));
+            var audioSenderReportFactories = __spreadArray([], __read(_this.audio.send.values()), false);
+            var videoSenderReportFactories = __spreadArray([], __read(_this.video.send.values()), false);
+            var audioReceiverReportFactories = __spreadArray([], __read(_this.audio.recv.values()), false);
+            var videoReceiverReportFactories = __spreadArray([], __read(_this.video.recv.values()), false);
             var report = new PeerConnectionReport(_this.ice.lastReport, {
                 send: audioSenderReportFactories.map(function (factory) { return factory.lastReport; }).filter(function (report) { return report; }),
                 recv: audioReceiverReportFactories.map(function (factory) { return factory.lastReport; }).filter(function (report) { return report; })
@@ -151,7 +155,7 @@ function getSenderOrReceiverReports(sendersOrReceivers) {
                 for (var _b = __values(report.values()), _c = _b.next(); !_c.done; _c = _b.next()) {
                     var stats = _c.value;
                     if (stats.type === 'inbound-rtp') {
-                        stats.id = trackId + "-" + stats.id;
+                        stats.id = "".concat(trackId, "-").concat(stats.id);
                     }
                 }
             }

@@ -210,7 +210,7 @@ var MediaTrack = /** @class */ (function (_super) {
     MediaTrack.prototype._selectElement = function (selector) {
         var el = document.querySelector(selector);
         if (!el) {
-            throw new Error("Selector matched no element: " + selector);
+            throw new Error("Selector matched no element: ".concat(selector));
         }
         return el;
     };
@@ -306,14 +306,14 @@ function playIfPausedAndNotBackgrounded(el, log) {
             // Bug: https://bugs.webkit.org/show_bug.cgi?id=213853
             //
             localMediaRestartDeferreds.whenResolved('audio').then(function () {
-                log.info("Playing unintentionally paused <" + tag + "> element");
+                log.info("Playing unintentionally paused <".concat(tag, "> element"));
                 log.debug('Element:', el);
                 return el.play();
             }).then(function () {
-                log.info("Successfully played unintentionally paused <" + tag + "> element");
+                log.info("Successfully played unintentionally paused <".concat(tag, "> element"));
                 log.debug('Element:', el);
             }).catch(function (error) {
-                log.warn("Error while playing unintentionally paused <" + tag + "> element:", { error: error, el: el });
+                log.warn("Error while playing unintentionally paused <".concat(tag, "> element:"), { error: error, el: el });
             });
         }
     });

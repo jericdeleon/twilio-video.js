@@ -30,10 +30,14 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-var __spreadArray = (this && this.__spreadArray) || function (to, from) {
-    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
-        to[j] = from[i];
-    return to;
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
 var EventEmitter = require('events').EventEmitter;
 var util = require('./util');
@@ -180,7 +184,7 @@ var StateMachine = /** @class */ (function (_super) {
     StateMachine.prototype.preempt = function (newState, name, payload) {
         // 1. Check that the new state is valid.
         if (!isValidTransition(this._states, this.state, newState)) {
-            throw new Error("Cannot transition from \"" + this.state + "\" to \"" + newState + "\"");
+            throw new Error("Cannot transition from \"".concat(this.state, "\" to \"").concat(newState, "\""));
         }
         // 2. Release the old lock, if any.
         var oldLock;
@@ -216,10 +220,10 @@ var StateMachine = /** @class */ (function (_super) {
      */
     StateMachine.prototype.releaseLock = function (key) {
         if (!this.isLocked) {
-            throw new Error("Could not release the lock for " + key.name + " because the StateMachine is not locked");
+            throw new Error("Could not release the lock for ".concat(key.name, " because the StateMachine is not locked"));
         }
         else if (!this.hasLock(key)) {
-            throw new Error("Could not release the lock for " + key.name + " because " + this._lock.name + " has the lock");
+            throw new Error("Could not release the lock for ".concat(key.name, " because ").concat(this._lock.name, " has the lock"));
         }
         if (key.depth === 0) {
             this._lock = null;
@@ -238,10 +242,10 @@ var StateMachine = /** @class */ (function (_super) {
      */
     StateMachine.prototype.releaseLockCompletely = function (key) {
         if (!this.isLocked) {
-            throw new Error("Could not release the lock for " + key.name + " because the StateMachine is not locked");
+            throw new Error("Could not release the lock for ".concat(key.name, " because the StateMachine is not locked"));
         }
         else if (!this.hasLock(key)) {
-            throw new Error("Could not release the lock for " + key.name + " because " + this._lock.name + " has the lock");
+            throw new Error("Could not release the lock for ".concat(key.name, " because ").concat(this._lock.name, " has the lock"));
         }
         key.depth = 0;
         this._lock = null;
@@ -286,7 +290,7 @@ var StateMachine = /** @class */ (function (_super) {
         var key = typeof nameOrKey === 'string' ? null : nameOrKey;
         var name = key ? key.name : nameOrKey;
         if (key && !this.hasLock(key) || !key && this.isLocked) {
-            throw new Error("Could not take the lock for " + name + " because the lock for " + this._lock.name + " was not released");
+            throw new Error("Could not take the lock for ".concat(name, " because the lock for ").concat(this._lock.name, " was not released"));
         }
         // Reentrant lock
         if (key) {
@@ -316,19 +320,19 @@ var StateMachine = /** @class */ (function (_super) {
                     'transition');
             }
             else if (!this.hasLock(key)) {
-                throw new Error("Could not transition using the key for " + key.name + " because " + this._lock.name + " has the lock");
+                throw new Error("Could not transition using the key for ".concat(key.name, " because ").concat(this._lock.name, " has the lock"));
             }
         }
         else if (key) {
-            throw new Error("Key provided for " + key.name + ", but the StateMachine was not locked (possibly due to preemption)");
+            throw new Error("Key provided for ".concat(key.name, ", but the StateMachine was not locked (possibly due to preemption)"));
         }
         // 2. Check that the new state is valid.
         if (!isValidTransition(this._states, this.state, newState)) {
-            throw new Error("Cannot transition from \"" + this.state + "\" to \"" + newState + "\"");
+            throw new Error("Cannot transition from \"".concat(this.state, "\" to \"").concat(newState, "\""));
         }
         // 3. Update the state and emit an event.
         this._state = newState;
-        this.emit.apply(this, __spreadArray([], __read(['stateChanged', newState].concat(payload))));
+        this.emit.apply(this, __spreadArray([], __read(['stateChanged', newState].concat(payload)), false));
     };
     /**
      * Attempt to transition to a new state. Unlike {@link StateMachine#transition},
@@ -439,7 +443,7 @@ function transformStates(states) {
  * @returns {Error}
  */
 function createUnreachableError(here, there) {
-    return new Error("\"" + there + "\" cannot be reached from \"" + here + "\"");
+    return new Error("\"".concat(there, "\" cannot be reached from \"").concat(here, "\""));
 }
 module.exports = StateMachine;
 //# sourceMappingURL=statemachine.js.map

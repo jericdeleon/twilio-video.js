@@ -48,7 +48,7 @@ var RemoteAudioTrack = /** @class */ (function (_super) {
         return _super.call(this, sid, mediaTrackReceiver, isEnabled, isSwitchedOff, setPriority, setRenderHint, options) || this;
     }
     RemoteAudioTrack.prototype.toString = function () {
-        return "[RemoteAudioTrack #" + this._instanceId + ": " + this.sid + "]";
+        return "[RemoteAudioTrack #".concat(this._instanceId, ": ").concat(this.sid, "]");
     };
     /**
      * Update the subscribe {@link Track.Priority} of the {@link RemoteAudioTrack}.

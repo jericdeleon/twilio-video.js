@@ -43,7 +43,7 @@ var LocalAudioTrack = /** @class */ (function (_super) {
         return _super.call(this, mediaStreamTrack, options) || this;
     }
     LocalAudioTrack.prototype.toString = function () {
-        return "[LocalAudioTrack #" + this._instanceId + ": " + this.id + "]";
+        return "[LocalAudioTrack #".concat(this._instanceId, ": ").concat(this.id, "]");
     };
     LocalAudioTrack.prototype.attach = function (el) {
         el = _super.prototype.attach.call(this, el);

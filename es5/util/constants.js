@@ -7,8 +7,8 @@ module.exports.DEFAULT_LOGGER_NAME = 'twilio-video';
 module.exports.WS_SERVER = function (environment, region) {
     region = region === 'gll' ? 'global' : encodeURIComponent(region);
     return environment === 'prod'
-        ? "wss://" + region + ".vss.twilio.com/signaling"
-        : "wss://" + region + ".vss." + environment + ".twilio.com/signaling";
+        ? "wss://".concat(region, ".vss.twilio.com/signaling")
+        : "wss://".concat(region, ".vss.").concat(environment, ".twilio.com/signaling");
 };
 module.exports.PUBLISH_MAX_ATTEMPTS = 5;
 module.exports.PUBLISH_BACKOFF_JITTER = 10;
@@ -26,16 +26,16 @@ function article(word) {
 }
 module.exports.typeErrors = {
     ILLEGAL_INVOKE: function (name, context) {
-        return new TypeError("Illegal call to " + name + ": " + context);
+        return new TypeError("Illegal call to ".concat(name, ": ").concat(context));
     },
     INVALID_TYPE: function (name, type) {
-        return new TypeError(name + " must be " + article(type) + " " + type);
+        return new TypeError("".concat(name, " must be ").concat(article(type), " ").concat(type));
     },
     INVALID_VALUE: function (name, values) {
-        return new RangeError(name + " must be one of " + values.join(', '));
+        return new RangeError("".concat(name, " must be one of ").concat(values.join(', ')));
     },
     REQUIRED_ARGUMENT: function (name) {
-        return new TypeError(name + " must be specified");
+        return new TypeError("".concat(name, " must be specified"));
     }
 };
 module.exports.DEFAULT_FRAME_RATE = 24;

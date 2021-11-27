@@ -37,7 +37,7 @@ var LocalDataTrackPublication = /** @class */ (function (_super) {
         return _super.call(this, signaling, track, unpublish, options) || this;
     }
     LocalDataTrackPublication.prototype.toString = function () {
-        return "[LocalDataTrackPublication #" + this._instanceId + ": " + this.trackSid + "]";
+        return "[LocalDataTrackPublication #".concat(this._instanceId, ": ").concat(this.trackSid, "]");
     };
     return LocalDataTrackPublication;
 }(LocalTrackPublication));

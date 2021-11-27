@@ -79,7 +79,7 @@ var LocalTrackPublication = /** @class */ (function (_super) {
         return _this;
     }
     LocalTrackPublication.prototype.toString = function () {
-        return "[LocalTrackPublication #" + this._instanceId + ": " + this.trackSid + "]";
+        return "[LocalTrackPublication #".concat(this._instanceId, ": ").concat(this.trackSid, "]");
     };
     /**
      * Update the {@link Track.Priority} of the published {@link LocalTrack}.

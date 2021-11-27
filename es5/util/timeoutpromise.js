@@ -30,10 +30,14 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-var __spreadArray = (this && this.__spreadArray) || function (to, from) {
-    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
-        to[j] = from[i];
-    return to;
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
 var EventEmitter = require('events').EventEmitter;
 var util = require('./');
@@ -124,7 +128,7 @@ var TimeoutPromise = /** @class */ (function (_super) {
     }
     TimeoutPromise.prototype.catch = function () {
         var _a;
-        return (_a = this._promise).catch.apply(_a, __spreadArray([], __read(arguments)));
+        return (_a = this._promise).catch.apply(_a, __spreadArray([], __read(arguments), false));
     };
     /**
      * Start the timer that will time out the {@link TimeoutPromise} if the
@@ -150,7 +154,7 @@ var TimeoutPromise = /** @class */ (function (_super) {
     };
     TimeoutPromise.prototype.then = function () {
         var _a;
-        return (_a = this._promise).then.apply(_a, __spreadArray([], __read(arguments)));
+        return (_a = this._promise).then.apply(_a, __spreadArray([], __read(arguments), false));
     };
     return TimeoutPromise;
 }(EventEmitter));

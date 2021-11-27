@@ -30,10 +30,14 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-var __spreadArray = (this && this.__spreadArray) || function (to, from) {
-    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
-        to[j] = from[i];
-    return to;
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
 var Participant = require('./participant');
 /**
@@ -78,7 +82,7 @@ var RemoteParticipant = /** @class */ (function (_super) {
         return _this;
     }
     RemoteParticipant.prototype.toString = function () {
-        return "[RemoteParticipant #" + this._instanceId + (this.sid ? ": " + this.sid : '') + "]";
+        return "[RemoteParticipant #".concat(this._instanceId).concat(this.sid ? ": ".concat(this.sid) : '', "]");
     };
     /**
      * @private
@@ -112,14 +116,14 @@ var RemoteParticipant = /** @class */ (function (_super) {
      * @private
      */
     RemoteParticipant.prototype._getTrackPublicationEvents = function () {
-        return __spreadArray(__spreadArray([], __read(_super.prototype._getTrackPublicationEvents.call(this))), [
+        return __spreadArray(__spreadArray([], __read(_super.prototype._getTrackPublicationEvents.call(this)), false), [
             ['subscriptionFailed', 'trackSubscriptionFailed'],
             ['trackDisabled', 'trackDisabled'],
             ['trackEnabled', 'trackEnabled'],
             ['publishPriorityChanged', 'trackPublishPriorityChanged'],
             ['trackSwitchedOff', 'trackSwitchedOff'],
             ['trackSwitchedOn', 'trackSwitchedOn']
-        ]);
+        ], false);
     };
     /**
      * @private

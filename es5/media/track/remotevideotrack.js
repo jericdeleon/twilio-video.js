@@ -283,7 +283,7 @@ var RemoteVideoTrack = /** @class */ (function (_super) {
         return _super.prototype.removeProcessor.apply(this, arguments);
     };
     RemoteVideoTrack.prototype.toString = function () {
-        return "[RemoteVideoTrack #" + this._instanceId + ": " + this.sid + "]";
+        return "[RemoteVideoTrack #".concat(this._instanceId, ": ").concat(this.sid, "]");
     };
     /**
      * Update the subscribe {@link Track.Priority} of the {@link RemoteVideoTrack}.

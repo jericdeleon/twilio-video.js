@@ -30,10 +30,14 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-var __spreadArray = (this && this.__spreadArray) || function (to, from) {
-    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
-        to[j] = from[i];
-    return to;
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
 var constants = require('./constants');
 var E = constants.typeErrors, trackPriority = constants.trackPriority;
@@ -94,8 +98,8 @@ function deprecateEvents(name, emitter, events, log) {
     var warningsShown = new Set();
     emitter.on('newListener', function newListener(event) {
         if (events.has(event) && !warningsShown.has(event)) {
-            log.deprecated(name + "#" + event + " has been deprecated and scheduled for removal in twilio-video.js@2.0.0." + (events.get(event)
-                ? " Use " + name + "#" + events.get(event) + " instead."
+            log.deprecated("".concat(name, "#").concat(event, " has been deprecated and scheduled for removal in twilio-video.js@2.0.0.").concat(events.get(event)
+                ? " Use ".concat(name, "#").concat(events.get(event), " instead.")
                 : ''));
             warningsShown.add(event);
         }
@@ -212,12 +216,12 @@ function promiseFromEvents(operation, eventEmitter, successEvent, failureEvent) 
             if (failureEvent) {
                 eventEmitter.removeListener(failureEvent, onFailure);
             }
-            resolve.apply(void 0, __spreadArray([], __read(args)));
+            resolve.apply(void 0, __spreadArray([], __read(args), false));
         }
         function onFailure() {
             var args = [].slice.call(arguments);
             eventEmitter.removeListener(successEvent, onSuccess);
-            reject.apply(void 0, __spreadArray([], __read(args)));
+            reject.apply(void 0, __spreadArray([], __read(args), false));
         }
         eventEmitter.once(successEvent, onSuccess);
         if (failureEvent) {
@@ -297,7 +301,7 @@ function delegateMethod(source, wrapper, target, methodName) {
         for (var _i = 0; _i < arguments.length; _i++) {
             args[_i] = arguments[_i];
         }
-        return (_a = this[target])[methodName].apply(_a, __spreadArray([], __read(args)));
+        return (_a = this[target])[methodName].apply(_a, __spreadArray([], __read(args), false));
     };
 }
 /**
@@ -392,7 +396,7 @@ function proxyProperty(source, wrapper, target, propertyName) {
             for (var _i = 0; _i < arguments.length; _i++) {
                 args[_i] = arguments[_i];
             }
-            wrapper.dispatchEvent.apply(wrapper, __spreadArray([], __read(args)));
+            wrapper.dispatchEvent.apply(wrapper, __spreadArray([], __read(args), false));
         });
         return;
     }
@@ -445,7 +449,7 @@ function buildLogLevels(logLevel) {
  */
 function trackClass(track, local) {
     local = local ? 'Local' : '';
-    return local + (track.kind || '').replace(/\w{1}/, function (m) { return m.toUpperCase(); }) + "Track";
+    return "".concat(local + (track.kind || '').replace(/\w{1}/, function (m) { return m.toUpperCase(); }), "Track");
 }
 /**
  * Get the {@link TrackPublication}'s derived class name
@@ -455,7 +459,7 @@ function trackClass(track, local) {
  */
 function trackPublicationClass(publication, local) {
     local = local ? 'Local' : '';
-    return local + (publication.kind || '').replace(/\w{1}/, function (m) { return m.toUpperCase(); }) + "TrackPublication";
+    return "".concat(local + (publication.kind || '').replace(/\w{1}/, function (m) { return m.toUpperCase(); }), "TrackPublication");
 }
 /**
  * Sets all underscore-prefixed properties on `object` non-enumerable.
@@ -487,7 +491,7 @@ function hidePrivateAndCertainPublicPropertiesInClass(klass, props) {
             for (var _i = 0; _i < arguments.length; _i++) {
                 args[_i] = arguments[_i];
             }
-            var _this = _super.apply(this, __spreadArray([], __read(args))) || this;
+            var _this = _super.apply(this, __spreadArray([], __read(args), false)) || this;
             hidePrivateProperties(_this);
             hidePublicProperties(_this, props);
             return _this;
@@ -535,7 +539,7 @@ function arrayToJSON(array) {
  * @returns {Array<*>}
  */
 function setToJSON(set) {
-    return arrayToJSON(__spreadArray([], __read(set)));
+    return arrayToJSON(__spreadArray([], __read(set), false));
 }
 /**
  * Convert a Map from strings to values to an object of JSON values by calling
@@ -544,7 +548,7 @@ function setToJSON(set) {
  * @returns {object}
  */
 function mapToJSON(map) {
-    return __spreadArray([], __read(map.entries())).reduce(function (json, _a) {
+    return __spreadArray([], __read(map.entries()), false).reduce(function (json, _a) {
         var _b;
         var _c = __read(_a, 2), key = _c[0], value = _c[1];
         return Object.assign((_b = {}, _b[key] = valueToJSON(value), _b), json);

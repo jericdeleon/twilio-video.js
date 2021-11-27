@@ -82,7 +82,7 @@ function createLocalTracks(options) {
         Log: Log,
         video: isAudioVideoAbsent
     }, options);
-    var logComponentName = "[createLocalTracks #" + ++createLocalTrackCalls + "]";
+    var logComponentName = "[createLocalTracks #".concat(++createLocalTrackCalls, "]");
     var logLevels = buildLogLevels(options.logLevel);
     var log = new options.Log('default', logComponentName, logLevels, options.loggerName);
     // NOTE(mmalavalli): The Room "name" in "options" was being used

@@ -101,7 +101,7 @@ var RemoteTrackPublication = /** @class */ (function (_super) {
                 _this.emit(signaling.isEnabled ? 'trackEnabled' : 'trackDisabled');
             }
             if (isSwitchedOff !== signaling.isSwitchedOff) {
-                _this._log.debug(_this.trackSid + ": " + (isSwitchedOff ? 'OFF' : 'ON') + " => " + (signaling.isSwitchedOff ? 'OFF' : 'ON'));
+                _this._log.debug("".concat(_this.trackSid, ": ").concat(isSwitchedOff ? 'OFF' : 'ON', " => ").concat(signaling.isSwitchedOff ? 'OFF' : 'ON'));
                 isSwitchedOff = signaling.isSwitchedOff;
                 if (_this.track) {
                     _this.track._setSwitchedOff(signaling.isSwitchedOff);
@@ -119,7 +119,7 @@ var RemoteTrackPublication = /** @class */ (function (_super) {
         return _this;
     }
     RemoteTrackPublication.prototype.toString = function () {
-        return "[RemoteTrackPublication #" + this._instanceId + ": " + this.trackSid + "]";
+        return "[RemoteTrackPublication #".concat(this._instanceId, ": ").concat(this.trackSid, "]");
     };
     /**
      * @private

@@ -172,7 +172,7 @@ function connect(token, options) {
     var loggerName = options.loggerName || DEFAULT_LOGGER_NAME;
     var logLevel = options.logLevel || DEFAULT_LOG_LEVEL;
     var logLevels = buildLogLevels(logLevel);
-    var logComponentName = "[connect #" + ++connectCalls + "]";
+    var logComponentName = "[connect #".concat(++connectCalls, "]");
     var log;
     try {
         log = new Log('default', logComponentName, logLevels, loggerName);
@@ -801,8 +801,8 @@ function deprecateOptions(options, log, deprecationTable) {
                 delete options[name];
             }
             if (!didWarn && !['error', 'off'].includes(log.level)) {
-                log.warn("The ConnectOptions \"" + name + "\" is " + (newName
-                    ? "deprecated and scheduled for removal. Please use \"" + newName + "\" instead."
+                log.warn("The ConnectOptions \"".concat(name, "\" is ").concat(newName
+                    ? "deprecated and scheduled for removal. Please use \"".concat(newName, "\" instead.")
                     : 'no longer applicable and will be ignored.'));
                 prop.didWarn = true;
             }

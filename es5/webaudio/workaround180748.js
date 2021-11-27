@@ -50,7 +50,7 @@ function workaround(log, getUserMedia, constraints, n, timeout) {
 to get a new one, but we\'ve run out of retries; returning it anyway.');
                     return stream;
                 }
-                log.warn("Got a silent audio MediaStreamTrack. Stopping all MediaStreamTracks and calling getUserMedia again. This is retry #" + ++retry + ".");
+                log.warn("Got a silent audio MediaStreamTrack. Stopping all MediaStreamTracks and calling getUserMedia again. This is retry #".concat(++retry, "."));
                 stream.getTracks().forEach(function (track) { return track.stop(); });
                 n--;
                 return doWorkaround();

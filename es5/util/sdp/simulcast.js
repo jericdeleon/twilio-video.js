@@ -119,12 +119,12 @@ var TrackAttributes = /** @class */ (function () {
         var simSSRCs = Array.from(this.primarySSRCs.values());
         var ssrcs = rtxPairs.length ? flatMap(rtxPairs) : simSSRCs;
         var attrLines = flatMap(ssrcs, function (ssrc) { return [
-            "a=ssrc:" + ssrc + " cname:" + _this.cName,
-            "a=ssrc:" + ssrc + " msid:" + _this.streamId + " " + _this.trackId
+            "a=ssrc:".concat(ssrc, " cname:").concat(_this.cName),
+            "a=ssrc:".concat(ssrc, " msid:").concat(_this.streamId, " ").concat(_this.trackId)
         ]; });
-        var rtxPairLines = rtxPairs.map(function (rtxPair) { return "a=ssrc-group:FID " + rtxPair.join(' '); });
+        var rtxPairLines = rtxPairs.map(function (rtxPair) { return "a=ssrc-group:FID ".concat(rtxPair.join(' ')); });
         var simGroupLines = [
-            "a=ssrc-group:SIM " + simSSRCs.join(' ')
+            "a=ssrc-group:SIM ".concat(simSSRCs.join(' '))
         ];
         return rtxPairLines.concat(attrLines).concat(simGroupLines);
     };
@@ -160,7 +160,7 @@ function getSimulcastSSRCs(section) {
  * @param {string} - {@link SSRC} attribute value
  */
 function getSSRCAttribute(section, ssrc, attribute) {
-    var pattern = "a=ssrc:" + ssrc + " " + attribute + ":(.+)";
+    var pattern = "a=ssrc:".concat(ssrc, " ").concat(attribute, ":(.+)");
     return section.match(new RegExp(pattern))[1];
 }
 /**

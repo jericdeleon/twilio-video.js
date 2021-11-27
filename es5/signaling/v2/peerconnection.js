@@ -30,10 +30,14 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-var __spreadArray = (this && this.__spreadArray) || function (to, from) {
-    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
-        to[j] = from[i];
-    return to;
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
 var DefaultBackoff = require('backoff');
 var _a = require('@twilio/webrtc'), DefaultMediaStream = _a.MediaStream, DefaultRTCIceCandidate = _a.RTCIceCandidate, DefaultRTCPeerConnection = _a.RTCPeerConnection, DefaultRTCSessionDescription = _a.RTCSessionDescription, getStatistics = _a.getStats;
@@ -407,7 +411,7 @@ var PeerConnectionV2 = /** @class */ (function (_super) {
         return _this;
     }
     PeerConnectionV2.prototype.toString = function () {
-        return "[PeerConnectionV2 #" + this._instanceId + ": " + this.id + "]";
+        return "[PeerConnectionV2 #".concat(this._instanceId, ": ").concat(this.id, "]");
     };
     Object.defineProperty(PeerConnectionV2.prototype, "connectionState", {
         /**
@@ -473,7 +477,7 @@ var PeerConnectionV2 = /** @class */ (function (_super) {
             //
             // Chrome bug: https://bugs.chromium.org/p/chromium/issues/detail?id=978582
             //
-            _this._log.warn("Failed to add RTCIceCandidate " + (candidate ? "\"" + candidate.candidate + "\"" : 'null') + ": "
+            _this._log.warn("Failed to add RTCIceCandidate ".concat(candidate ? "\"".concat(candidate.candidate, "\"") : 'null', ": ")
                 + error.message);
         });
     };
@@ -499,7 +503,7 @@ var PeerConnectionV2 = /** @class */ (function (_super) {
         if (transceiver && transceiver.sender) {
             var oldTrackId = transceiver.sender.track ? transceiver.sender.track.id : null;
             if (oldTrackId) {
-                this._log.warn("Reusing transceiver: " + transceiver.mid + "] " + oldTrackId + " => " + track.id);
+                this._log.warn("Reusing transceiver: ".concat(transceiver.mid, "] ").concat(oldTrackId, " => ").concat(track.id));
             }
             // NOTE(mpatwardhan):remember this transceiver while we replace track.
             // we recycle transceivers that are not in use after 'negotiationCompleted', but we want to prevent
@@ -708,7 +712,7 @@ var PeerConnectionV2 = /** @class */ (function (_super) {
         var iceConnectionState = this._peerConnection.iceConnectionState;
         var isIceConnectedOrComplete = ['connected', 'completed'].includes(iceConnectionState);
         var log = this._log;
-        log.debug("ICE connection state is \"" + iceConnectionState + "\"");
+        log.debug("ICE connection state is \"".concat(iceConnectionState, "\""));
         if (isIceConnectedOrComplete) {
             this._iceReconnectTimeout.clear();
             this._iceRestartBackoff.reset();
@@ -765,13 +769,13 @@ var PeerConnectionV2 = /** @class */ (function (_super) {
     PeerConnectionV2.prototype._handleIceGatheringStateChange = function () {
         var iceGatheringState = this._peerConnection.iceGatheringState;
         var log = this._log;
-        log.debug("ICE gathering state is \"" + iceGatheringState + "\"");
+        log.debug("ICE gathering state is \"".concat(iceGatheringState, "\""));
         // NOTE(mmalavalli): Start the ICE gathering timeout only if the RTCPeerConnection
         // has started gathering candidates for the first time since the initial offer/answer
         // or an offer/answer with ICE restart.
         var _a = this._iceGatheringTimeout, delay = _a.delay, isSet = _a.isSet;
         if (iceGatheringState === 'gathering' && !this._didGenerateLocalCandidates && !isSet) {
-            log.debug("Starting ICE gathering timeout: " + delay);
+            log.debug("Starting ICE gathering timeout: ".concat(delay));
             this._iceGatheringFailed = false;
             this._iceGatheringTimeout.start();
         }
@@ -840,7 +844,7 @@ var PeerConnectionV2 = /** @class */ (function (_super) {
         this._shouldRestartIce = true;
         var _a = this._iceReconnectTimeout, delay = _a.delay, isSet = _a.isSet;
         if (!isSet) {
-            log.debug("Starting ICE reconnect timeout: " + delay);
+            log.debug("Starting ICE reconnect timeout: ".concat(delay));
             this._iceReconnectTimeout.start();
         }
         this.offer();
@@ -1041,15 +1045,15 @@ var PeerConnectionV2 = /** @class */ (function (_super) {
             });
         }
         return this._peerConnection.setLocalDescription(description).catch(function (error) {
-            _this._log.warn("Calling setLocalDescription with an RTCSessionDescription of type \"" + description.type + "\" failed with the error \"" + error.message + "\".");
+            _this._log.warn("Calling setLocalDescription with an RTCSessionDescription of type \"".concat(description.type, "\" failed with the error \"").concat(error.message, "\"."));
             var errorToThrow = new MediaClientLocalDescFailedError();
             var publishWarning = {
-                message: "Calling setLocalDescription with an RTCSessionDescription of type \"" + description.type + "\" failed",
+                message: "Calling setLocalDescription with an RTCSessionDescription of type \"".concat(description.type, "\" failed"),
                 code: errorToThrow.code,
                 error: error
             };
             if (description.sdp) {
-                _this._log.warn("The SDP was " + description.sdp);
+                _this._log.warn("The SDP was ".concat(description.sdp));
                 publishWarning.sdp = description.sdp;
             }
             _this._publishMediaWarning(publishWarning);
@@ -1137,9 +1141,9 @@ var PeerConnectionV2 = /** @class */ (function (_super) {
                 negotiationCompleted(_this);
             }
         }, function (error) {
-            _this._log.warn("Calling setRemoteDescription with an RTCSessionDescription of type \"" + description.type + "\" failed with the error \"" + error.message + "\".");
+            _this._log.warn("Calling setRemoteDescription with an RTCSessionDescription of type \"".concat(description.type, "\" failed with the error \"").concat(error.message, "\"."));
             if (description.sdp) {
-                _this._log.warn("The SDP was " + description.sdp);
+                _this._log.warn("The SDP was ".concat(description.sdp));
             }
             throw error;
         });
@@ -1206,7 +1210,7 @@ var PeerConnectionV2 = /** @class */ (function (_super) {
         }).catch(function (error) {
             var errorToThrow = new MediaClientRemoteDescFailedError();
             _this._publishMediaWarning({
-                message: "Calling setRemoteDescription with an RTCSessionDescription of type \"" + description.type + "\" failed",
+                message: "Calling setRemoteDescription with an RTCSessionDescription of type \"".concat(description.type, "\" failed"),
                 code: errorToThrow.code,
                 error: error,
                 sdp: description.sdp
@@ -1258,7 +1262,7 @@ var PeerConnectionV2 = /** @class */ (function (_super) {
             this._dataChannels.set(dataTrackSender, dataChannel);
         }
         catch (error) {
-            this._log.warn("Error creating an RTCDataChannel for DataTrack \"" + dataTrackSender.id + "\": " + error.message);
+            this._log.warn("Error creating an RTCDataChannel for DataTrack \"".concat(dataTrackSender.id, "\": ").concat(error.message));
         }
     };
     /**
@@ -1441,7 +1445,7 @@ function rewriteLocalTrackId(pcv2, stats) {
     return Object.assign(stats, { trackId: trackId });
 }
 function rewriteTrackId(pcv2, stats) {
-    var receiver = __spreadArray([], __read(pcv2._mediaTrackReceivers)).find(function (receiver) { return receiver.track.id === stats.trackId; });
+    var receiver = __spreadArray([], __read(pcv2._mediaTrackReceivers), false).find(function (receiver) { return receiver.track.id === stats.trackId; });
     var trackId = receiver ? receiver.id : null;
     return Object.assign(stats, { trackId: trackId });
 }
@@ -1628,7 +1632,7 @@ function updateEncodingParameters(pcv2) {
         else if (pcv2._isChromeScreenShareTrack(sender.track)) {
             // NOTE(mpatwardhan): Sometimes (JSDK-2557) chrome does not send any bytes on screen track if MaxBitRate is set on it via setParameters,
             // To workaround this issue we will not apply maxBitrate if the track appears to be a screen share track created by chrome
-            pcv2._log.warn("Not setting maxBitrate for " + sender.track.kind + " Track " + sender.track.id + " because it appears to be screen share track: " + sender.track.label);
+            pcv2._log.warn("Not setting maxBitrate for ".concat(sender.track.kind, " Track ").concat(sender.track.id, " because it appears to be screen share track: ").concat(sender.track.label));
         }
         else {
             setMaxBitrate(params, maxBitrate);
@@ -1642,7 +1646,7 @@ function updateEncodingParameters(pcv2) {
             params.encodings[0].networkPriority = 'high';
         }
         sender.setParameters(params).catch(function (error) {
-            pcv2._log.warn("Error while setting encodings parameters for " + sender.track.kind + " Track " + sender.track.id + ": " + (error.message || error.name));
+            pcv2._log.warn("Error while setting encodings parameters for ".concat(sender.track.kind, " Track ").concat(sender.track.id, ": ").concat(error.message || error.name));
         });
     });
 }

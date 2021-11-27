@@ -30,10 +30,14 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-var __spreadArray = (this && this.__spreadArray) || function (to, from) {
-    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
-        to[j] = from[i];
-    return to;
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
 var EventEmitter = require('./eventemitter');
 var RemoteParticipant = require('./remoteparticipant');
@@ -163,7 +167,7 @@ var Room = /** @class */ (function (_super) {
         return _this;
     }
     Room.prototype.toString = function () {
-        return "[Room #" + this._instanceId + ": " + this.sid + "]";
+        return "[Room #".concat(this._instanceId, ": ").concat(this.sid, "]");
     };
     /**
      * Disconnect from the {@link Room}.
@@ -490,7 +494,7 @@ function connectParticipant(room, participantSignaling) {
             var args = [].slice.call(arguments);
             args.unshift(participantEvent);
             args.push(participant);
-            room.emit.apply(room, __spreadArray([], __read(args)));
+            room.emit.apply(room, __spreadArray([], __read(args), false));
         }
         participant.on(event, reemit);
         return [event, reemit];
@@ -511,8 +515,8 @@ function connectParticipant(room, participantSignaling) {
 function handleRecordingEvents(room, recording) {
     recording.on('updated', function updated() {
         var started = recording.isEnabled;
-        room._log.info("Recording " + (started ? 'started' : 'stopped'));
-        room.emit("recording" + (started ? 'Started' : 'Stopped'));
+        room._log.info("Recording ".concat(started ? 'started' : 'stopped'));
+        room.emit("recording".concat(started ? 'Started' : 'Stopped'));
     });
 }
 function handleSignalingEvents(room, signaling) {

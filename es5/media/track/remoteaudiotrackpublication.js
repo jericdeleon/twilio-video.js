@@ -39,7 +39,7 @@ var RemoteAudioTrackPublication = /** @class */ (function (_super) {
         return _super.call(this, signaling, options) || this;
     }
     RemoteAudioTrackPublication.prototype.toString = function () {
-        return "[RemoteAudioTrackPublication #" + this._instanceId + ": " + this.trackSid + "]";
+        return "[RemoteAudioTrackPublication #".concat(this._instanceId, ": ").concat(this.trackSid, "]");
     };
     return RemoteAudioTrackPublication;
 }(RemoteTrackPublication));

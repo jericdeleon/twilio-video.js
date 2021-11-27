@@ -30,10 +30,14 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-var __spreadArray = (this && this.__spreadArray) || function (to, from) {
-    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
-        to[j] = from[i];
-    return to;
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
 var guessBrowser = require('@twilio/webrtc/lib/util').guessBrowser;
 var PeerConnectionV2 = require('./peerconnection');
@@ -537,7 +541,7 @@ function summarizeIceOrPeerConnectionStates(states) {
  */
 function updateIceConnectionState(pcm) {
     pcm._lastIceConnectionState = pcm.iceConnectionState;
-    pcm._iceConnectionState = summarizeIceOrPeerConnectionStates(__spreadArray([], __read(pcm._peerConnections.values())).map(function (pcv2) { return pcv2.iceConnectionState; }));
+    pcm._iceConnectionState = summarizeIceOrPeerConnectionStates(__spreadArray([], __read(pcm._peerConnections.values()), false).map(function (pcv2) { return pcv2.iceConnectionState; }));
     if (pcm.iceConnectionState !== pcm._lastIceConnectionState) {
         pcm.emit('iceConnectionStateChanged');
     }
@@ -550,7 +554,7 @@ function updateIceConnectionState(pcm) {
  */
 function updateConnectionState(pcm) {
     pcm._lastConnectionState = pcm.connectionState;
-    pcm._connectionState = summarizeIceOrPeerConnectionStates(__spreadArray([], __read(pcm._peerConnections.values())).map(function (pcv2) { return pcv2.connectionState; }));
+    pcm._connectionState = summarizeIceOrPeerConnectionStates(__spreadArray([], __read(pcm._peerConnections.values()), false).map(function (pcv2) { return pcv2.connectionState; }));
     if (pcm.connectionState !== pcm._lastConnectionState) {
         pcm.emit('connectionStateChanged');
     }

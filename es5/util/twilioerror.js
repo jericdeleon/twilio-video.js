@@ -30,10 +30,14 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-var __spreadArray = (this && this.__spreadArray) || function (to, from) {
-    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
-        to[j] = from[i];
-    return to;
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
 /**
  * @extends Error
@@ -51,7 +55,7 @@ var TwilioError = /** @class */ (function (_super) {
     function TwilioError(code) {
         var _this = this;
         var args = [].slice.call(arguments, 1);
-        _this = _super.apply(this, __spreadArray([], __read(args))) || this;
+        _this = _super.apply(this, __spreadArray([], __read(args), false)) || this;
         Object.setPrototypeOf(_this, TwilioError.prototype);
         var error = Error.apply(_this, args);
         error.name = 'TwilioError';
@@ -72,8 +76,8 @@ var TwilioError = /** @class */ (function (_super) {
      * @returns {string}
      */
     TwilioError.prototype.toString = function () {
-        var message = this.message ? ": " + this.message : '';
-        return this.name + " " + this.code + message;
+        var message = this.message ? ": ".concat(this.message) : '';
+        return "".concat(this.name, " ").concat(this.code).concat(message);
     };
     return TwilioError;
 }(Error));

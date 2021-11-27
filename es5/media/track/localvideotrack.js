@@ -69,7 +69,7 @@ var LocalVideoTrack = /** @class */ (function (_super) {
         return _this;
     }
     LocalVideoTrack.prototype.toString = function () {
-        return "[LocalVideoTrack #" + this._instanceId + ": " + this.id + "]";
+        return "[LocalVideoTrack #".concat(this._instanceId, ": ").concat(this.id, "]");
     };
     /**
      * @private

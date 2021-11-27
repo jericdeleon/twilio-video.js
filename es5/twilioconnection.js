@@ -30,10 +30,14 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-var __spreadArray = (this && this.__spreadArray) || function (to, from) {
-    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
-        to[j] = from[i];
-    return to;
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
 var StateMachine = require('./statemachine');
 var _a = require('./util'), buildLogLevels = _a.buildLogLevels, makeUUID = _a.makeUUID;
@@ -138,7 +142,7 @@ var TwilioConnection = /** @class */ (function (_super) {
         var log = new options.Log('default', _this, logLevels, options.loggerName);
         var networkMonitor = options.networkMonitor ? new NetworkMonitor(function () {
             var type = networkMonitor.type;
-            var reason = "Network changed" + (type ? " to " + type : '');
+            var reason = "Network changed".concat(type ? " to ".concat(type) : '');
             log.debug(reason);
             _this._close({ code: WS_CLOSE_NETWORK_CHANGED, reason: reason });
         }) : null;
@@ -214,7 +218,7 @@ var TwilioConnection = /** @class */ (function (_super) {
                 args[_i - 1] = arguments[_i];
             }
             if (state in events) {
-                _this.emit.apply(_this, __spreadArray([events[state]], __read(args)));
+                _this.emit.apply(_this, __spreadArray([events[state]], __read(args), false));
             }
             var event = { name: state, group: 'signaling', level: eventsToLevels[_this.state] };
             if (state === 'closed') {
@@ -229,7 +233,7 @@ var TwilioConnection = /** @class */ (function (_super) {
         return _this;
     }
     TwilioConnection.prototype.toString = function () {
-        return "[TwilioConnection #" + this._instanceId + ": " + this._ws.url + "]";
+        return "[TwilioConnection #".concat(this._instanceId, ": ").concat(this._ws.url, "]");
     };
     /**
      * Close the {@link TwilioConnection}.
@@ -266,7 +270,7 @@ var TwilioConnection = /** @class */ (function (_super) {
             this.transition('closed', null, [CloseReason.LOCAL]);
         }
         else {
-            log.warn("Closed: " + code + " - " + reason);
+            log.warn("Closed: ".concat(code, " - ").concat(reason));
             if (code !== WS_CLOSE_BUSY_WAIT) {
                 this.transition('closed', null, [
                     wsCloseCodesToCloseReasons.get(code) || CloseReason.REMOTE
@@ -290,7 +294,7 @@ var TwilioConnection = /** @class */ (function (_super) {
             this.transition('early');
         }
         else if (this.state !== 'early') {
-            log.warn("Unexpected state \"" + this.state + "\" for connecting to the"
+            log.warn("Unexpected state \"".concat(this.state, "\" for connecting to the")
                 + ' TCMP server.');
             return;
         }
@@ -301,7 +305,7 @@ var TwilioConnection = /** @class */ (function (_super) {
         var openTimeout = this._options.openTimeout;
         // Add a timeout for getting the onopen event on the WebSocket (15 sec). After that, attempt to reconnect only if this is not the first attempt.
         this._openTimeout = new Timeout(function () {
-            var reason = "Failed to open in " + openTimeout + " ms";
+            var reason = "Failed to open in ".concat(openTimeout, " ms");
             _this._close({ code: WS_CLOSE_OPEN_TIMEOUT, reason: reason });
         }, openTimeout);
         ws.addEventListener('open', function () {
@@ -313,7 +317,7 @@ var TwilioConnection = /** @class */ (function (_super) {
             }
         });
         ws.addEventListener('message', function (message) {
-            log.debug("Incoming: " + message.data);
+            log.debug("Incoming: ".concat(message.data));
             try {
                 message = JSON.parse(message.data);
             }
@@ -343,8 +347,8 @@ var TwilioConnection = /** @class */ (function (_super) {
                     _this._handleWelcome(message);
                     break;
                 default:
-                    _this._log.debug("Unknown message type: " + message.type);
-                    _this.emit('error', new Error("Unknown message type: " + message.type));
+                    _this._log.debug("Unknown message type: ".concat(message.type));
+                    _this.emit('error', new Error("Unknown message type: ".concat(message.type)));
                     break;
             }
         });
@@ -358,16 +362,16 @@ var TwilioConnection = /** @class */ (function (_super) {
         var reason = _a.reason;
         var log = this._log;
         if (!['connecting', 'open'].includes(this.state)) {
-            log.warn("Unexpected state \"" + this.state + "\" for handling a \"bad\" message"
+            log.warn("Unexpected state \"".concat(this.state, "\" for handling a \"bad\" message")
                 + ' from the TCMP server.');
             return;
         }
         if (this.state === 'connecting') {
-            log.warn("Closing: " + WS_CLOSE_HELLO_FAILED + " - " + reason);
+            log.warn("Closing: ".concat(WS_CLOSE_HELLO_FAILED, " - ").concat(reason));
             this._close({ code: WS_CLOSE_HELLO_FAILED, reason: reason });
             return;
         }
-        log.debug("Error: " + reason);
+        log.debug("Error: ".concat(reason));
         this.emit('error', new Error(reason));
     };
     /**
@@ -380,7 +384,7 @@ var TwilioConnection = /** @class */ (function (_super) {
         var cookie = _a.cookie, keepAlive = _a.keepAlive, retryAfter = _a.retryAfter;
         var log = this._log;
         if (!['connecting', 'waiting'].includes(this.state)) {
-            log.warn("Unexpected state \"" + this.state + "\" for handling a \"busy\" message"
+            log.warn("Unexpected state \"".concat(this.state, "\" for handling a \"busy\" message")
                 + ' from the TCMP server.');
             return;
         }
@@ -392,9 +396,9 @@ var TwilioConnection = /** @class */ (function (_super) {
         }
         var reason = retryAfter < 0
             ? 'Received terminal "busy" message'
-            : "Received \"busy\" message, retrying after " + retryAfter + " ms";
+            : "Received \"busy\" message, retrying after ".concat(retryAfter, " ms");
         if (retryAfter < 0) {
-            log.warn("Closing: " + WS_CLOSE_SERVER_BUSY + " - " + reason);
+            log.warn("Closing: ".concat(WS_CLOSE_SERVER_BUSY, " - ").concat(reason));
             this._close({ code: WS_CLOSE_SERVER_BUSY, reason: reason });
             return;
         }
@@ -406,7 +410,7 @@ var TwilioConnection = /** @class */ (function (_super) {
             this._busyWaitTimeout = new Timeout(function () { return _this._startHandshake(); }, retryAfter);
         }
         else {
-            log.warn("Closing: " + WS_CLOSE_BUSY_WAIT + " - " + reason);
+            log.warn("Closing: ".concat(WS_CLOSE_BUSY_WAIT, " - ").concat(reason));
             this._close({ code: WS_CLOSE_BUSY_WAIT, reason: reason });
             this._busyWaitTimeout = new Timeout(function () { return _this._connect(); }, retryAfter);
         }
@@ -418,7 +422,7 @@ var TwilioConnection = /** @class */ (function (_super) {
      */
     TwilioConnection.prototype._handleHeartbeat = function () {
         if (this.state !== 'open') {
-            this._log.warn("Unexpected state \"" + this.state + "\" for handling a \"heartbeat\""
+            this._log.warn("Unexpected state \"".concat(this.state, "\" for handling a \"heartbeat\"")
                 + ' message from the TCMP server.');
             return;
         }
@@ -434,9 +438,9 @@ var TwilioConnection = /** @class */ (function (_super) {
         }
         var log = this._log;
         var maxConsecutiveMissedHeartbeats = this._options.maxConsecutiveMissedHeartbeats;
-        log.debug("Consecutive heartbeats missed: " + maxConsecutiveMissedHeartbeats);
-        var reason = "Missed " + maxConsecutiveMissedHeartbeats + " \"heartbeat\" messages";
-        log.warn("Closing: " + WS_CLOSE_HEARTBEATS_MISSED + " - " + reason);
+        log.debug("Consecutive heartbeats missed: ".concat(maxConsecutiveMissedHeartbeats));
+        var reason = "Missed ".concat(maxConsecutiveMissedHeartbeats, " \"heartbeat\" messages");
+        log.warn("Closing: ".concat(WS_CLOSE_HEARTBEATS_MISSED, " - ").concat(reason));
         this._close({ code: WS_CLOSE_HEARTBEATS_MISSED, reason: reason });
     };
     /**
@@ -447,7 +451,7 @@ var TwilioConnection = /** @class */ (function (_super) {
     TwilioConnection.prototype._handleMessage = function (_a) {
         var body = _a.body;
         if (this.state !== 'open') {
-            this._log.warn("Unexpected state \"" + this.state + "\" for handling a \"msg\" message"
+            this._log.warn("Unexpected state \"".concat(this.state, "\" for handling a \"msg\" message")
                 + ' from the TCMP server.');
             return;
         }
@@ -463,7 +467,7 @@ var TwilioConnection = /** @class */ (function (_super) {
         var negotiatedTimeout = _a.negotiatedTimeout;
         var log = this._log;
         if (!['connecting', 'waiting'].includes(this.state)) {
-            log.warn("Unexpected state \"" + this.state + "\" for handling a \"welcome\""
+            log.warn("Unexpected state \"".concat(this.state, "\" for handling a \"welcome\"")
                 + ' message from the TCMP server.');
             return;
         }
@@ -491,12 +495,12 @@ var TwilioConnection = /** @class */ (function (_super) {
         var log = this._log;
         if (this._hellosLeft <= 0) {
             var reason = 'All handshake attempts failed';
-            log.warn("Closing: " + WS_CLOSE_WELCOME_TIMEOUT + " - " + reason);
+            log.warn("Closing: ".concat(WS_CLOSE_WELCOME_TIMEOUT, " - ").concat(reason));
             this._close({ code: WS_CLOSE_WELCOME_TIMEOUT, reason: reason });
             return;
         }
         var maxConsecutiveFailedHellos = this._options.maxConsecutiveFailedHellos;
-        log.warn("Handshake attempt " + (maxConsecutiveFailedHellos - this._hellosLeft) + " failed");
+        log.warn("Handshake attempt ".concat(maxConsecutiveFailedHellos - this._hellosLeft, " failed"));
         this._startHandshake();
     };
     /**
@@ -509,7 +513,7 @@ var TwilioConnection = /** @class */ (function (_super) {
         var WebSocket = this._options.WebSocket;
         if (readyState === WebSocket.OPEN) {
             var data = JSON.stringify(message);
-            this._log.debug("Outgoing: " + data);
+            this._log.debug("Outgoing: ".concat(data));
             try {
                 this._ws.send(data);
                 if (this._sendHeartbeatTimeout) {
@@ -519,7 +523,7 @@ var TwilioConnection = /** @class */ (function (_super) {
             }
             catch (error) {
                 var reason = 'Failed to send message';
-                this._log.warn("Closing: " + WS_CLOSE_SEND_FAILED + " - " + reason);
+                this._log.warn("Closing: ".concat(WS_CLOSE_SEND_FAILED, " - ").concat(reason));
                 this._close({ code: WS_CLOSE_SEND_FAILED, reason: reason });
             }
         }

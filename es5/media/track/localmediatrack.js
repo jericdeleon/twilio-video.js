@@ -206,7 +206,7 @@ function mixinLocalMediaTrack(AudioOrVideoTrack) {
         LocalMediaTrack.prototype.enable = function (enabled) {
             enabled = typeof enabled === 'boolean' ? enabled : true;
             if (enabled !== this.mediaStreamTrack.enabled) {
-                this._log.info((enabled ? 'En' : 'Dis') + "abling");
+                this._log.info("".concat(enabled ? 'En' : 'Dis', "abling"));
                 this.mediaStreamTrack.enabled = enabled;
                 this.emit(enabled ? 'enabled' : 'disabled', this);
             }
@@ -217,11 +217,13 @@ function mixinLocalMediaTrack(AudioOrVideoTrack) {
         };
         LocalMediaTrack.prototype.restart = function (constraints) {
             var _this = this;
+            // eslint-disable-next-line
+            console.warn('custom log in restart!');
             var kind = this.kind;
             if (!this._isCreatedByCreateLocalTracks) {
                 return Promise.reject(ILLEGAL_INVOKE('restart', 'can only be called on a'
-                    + (" Local" + capitalize(kind) + "Track that is created using createLocalTracks")
-                    + (" or createLocal" + capitalize(kind) + "Track.")));
+                    + " Local".concat(capitalize(kind), "Track that is created using createLocalTracks")
+                    + " or createLocal".concat(capitalize(kind), "Track.")));
             }
             if (this._workaroundWebKitBug1208516Cleanup) {
                 this._workaroundWebKitBug1208516Cleanup();

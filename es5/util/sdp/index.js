@@ -47,7 +47,7 @@ function createBLine(modifier, maxBitrate) {
     if (!maxBitrate) {
         return null;
     }
-    return "\r\nb=" + modifier + ":" + (modifier === 'AS'
+    return "\r\nb=".concat(modifier, ":").concat(modifier === 'AS'
         ? Math.round((maxBitrate + RTCP_BITRATE) / 950)
         : maxBitrate);
 }
@@ -82,7 +82,7 @@ function createMidToMediaSectionMap(sdp) {
  */
 function createPtToCodecName(mediaSection) {
     return getPayloadTypesInMediaSection(mediaSection).reduce(function (ptToCodecName, pt) {
-        var rtpmapPattern = new RegExp("a=rtpmap:" + pt + " ([^/]+)");
+        var rtpmapPattern = new RegExp("a=rtpmap:".concat(pt, " ([^/]+)"));
         var matches = mediaSection.match(rtpmapPattern);
         var codecName = matches
             ? matches[1].toLowerCase()
@@ -101,7 +101,7 @@ function createPtToCodecName(mediaSection) {
 function getFmtpAttributesForPt(pt, mediaSection) {
     // In "a=fmtp:<pt> <name>=<value>[;<name>=<value>]*", the regex matches the codec
     // profile parameters expressed as name/value pairs separated by ";".
-    var fmtpRegex = new RegExp("^a=fmtp:" + pt + " (.+)$", 'm');
+    var fmtpRegex = new RegExp("^a=fmtp:".concat(pt, " (.+)$"), 'm');
     var matches = mediaSection.match(fmtpRegex);
     return matches && matches[1].split(';').reduce(function (attrs, nvPair) {
         var _a = __read(nvPair.split('='), 2), name = _a[0], value = _a[1];
@@ -127,9 +127,9 @@ function getMidForMediaSection(mediaSection) {
  * @returns {Array<string>} mediaSections
  */
 function getMediaSections(sdp, kind, direction) {
-    return sdp.replace(/\r\n\r\n$/, '\r\n').split('\r\nm=').slice(1).map(function (mediaSection) { return "m=" + mediaSection; }).filter(function (mediaSection) {
-        var kindPattern = new RegExp("m=" + (kind || '.*'), 'gm');
-        var directionPattern = new RegExp("a=" + (direction || '.*'), 'gm');
+    return sdp.replace(/\r\n\r\n$/, '\r\n').split('\r\nm=').slice(1).map(function (mediaSection) { return "m=".concat(mediaSection); }).filter(function (mediaSection) {
+        var kindPattern = new RegExp("m=".concat(kind || '.*'), 'gm');
+        var directionPattern = new RegExp("a=".concat(direction || '.*'), 'gm');
         return kindPattern.test(mediaSection) && directionPattern.test(mediaSection);
     });
 }
@@ -179,7 +179,7 @@ function setBitrateInMediaSection(modifier, maxBitrate, section) {
     var bLinePattern = /\r\nb=(AS|TIAS):([0-9]+)/;
     var bLineMatched = section.match(bLinePattern);
     if (!bLineMatched) {
-        return section.replace(/(\r\n)?$/, bLine + "$1");
+        return section.replace(/(\r\n)?$/, "".concat(bLine, "$1"));
     }
     var maxBitrateMatched = parseInt(bLineMatched[2], 10);
     maxBitrate = maxBitrate || Infinity;
@@ -466,8 +466,8 @@ function unifiedPlanAddOrRewriteTrackIds(sdp, midsToTrackIds) {
         // If the a=msid: line contains the "appdata" field, then replace it with the Track ID,
         // otherwise append the Track ID.
         var _a = __read(attributes.split(' '), 2), msid = _a[0], trackIdToRewrite = _a[1];
-        var msidRegex = new RegExp("msid:" + msid + (trackIdToRewrite ? " " + trackIdToRewrite : '') + "$", 'gm');
-        return mediaSection.replace(msidRegex, "msid:" + msid + " " + trackId);
+        var msidRegex = new RegExp("msid:".concat(msid).concat(trackIdToRewrite ? " ".concat(trackIdToRewrite) : '', "$"), 'gm');
+        return mediaSection.replace(msidRegex, "msid:".concat(msid, " ").concat(trackId));
     })).join('\r\n');
 }
 /**
@@ -518,7 +518,7 @@ function disableRtx(sdp) {
             /^a=rtpmap:.+ rtx\/.+$/,
             /^a=ssrc-group:.+$/
         ].concat(rtxSSRC
-            ? [new RegExp("^a=ssrc:" + rtxSSRC + " .+$")]
+            ? [new RegExp("^a=ssrc:".concat(rtxSSRC, " .+$"))]
             : []);
         mediaSection = mediaSection.split('\r\n')
             .filter(function (line) { return filterRegexes.every(function (regex) { return !regex.test(line); }); })
@@ -536,9 +536,9 @@ function disableRtx(sdp) {
 function generateFmtpLineFromPtAndAttributes(pt, fmtpAttrs) {
     var serializedFmtpAttrs = Object.entries(fmtpAttrs).map(function (_a) {
         var _b = __read(_a, 2), name = _b[0], value = _b[1];
-        return name + "=" + value;
+        return "".concat(name, "=").concat(value);
     }).join(';');
-    return "a=fmtp:" + pt + " " + serializedFmtpAttrs;
+    return "a=fmtp:".concat(pt, " ").concat(serializedFmtpAttrs);
 }
 /**
  * Enable DTX for opus in the m= sections for the given MIDs.`

@@ -58,7 +58,7 @@ var MediaSignaling = /** @class */ (function (_super) {
         configurable: true
     });
     MediaSignaling.prototype.toString = function () {
-        return "[MediaSignaling #" + this._instanceId + ":" + this.channel + "]";
+        return "[MediaSignaling #".concat(this._instanceId, ":").concat(this.channel, "]");
     };
     MediaSignaling.prototype.setup = function (id) {
         var _this = this;

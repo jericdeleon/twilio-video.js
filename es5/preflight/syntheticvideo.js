@@ -15,7 +15,7 @@ function syntheticVideo(_a) {
             var g = Math.round(Math.random() * 255);
             var b = Math.round(Math.random() * 255);
             var a = Math.round(Math.random() * 255);
-            ctx.fillStyle = "rgba(" + r + ", " + g + ", " + b + ", " + a + ")";
+            ctx.fillStyle = "rgba(".concat(r, ", ").concat(g, ", ").concat(b, ", ").concat(a, ")");
             ctx.fillRect(Math.random() * width, Math.random() * height, 50, 50);
             requestAnimationFrame(animate);
         }

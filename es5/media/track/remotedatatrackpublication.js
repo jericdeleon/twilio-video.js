@@ -37,7 +37,7 @@ var RemoteDataTrackPublication = /** @class */ (function (_super) {
         return _super.call(this, signaling, options) || this;
     }
     RemoteDataTrackPublication.prototype.toString = function () {
-        return "[RemoteDataTrackPublication #" + this._instanceId + ": " + this.trackSid + "]";
+        return "[RemoteDataTrackPublication #".concat(this._instanceId, ": ").concat(this.trackSid, "]");
     };
     return RemoteDataTrackPublication;
 }(RemoteTrackPublication));

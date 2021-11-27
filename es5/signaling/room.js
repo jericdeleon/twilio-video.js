@@ -170,7 +170,7 @@ var RoomSignaling = /** @class */ (function (_super) {
         return false;
     };
     RoomSignaling.prototype.toString = function () {
-        return "[RoomSignaling #" + this._instanceId + ": " + (this.localParticipant ? this.localParticipant.sid : 'null') + "]";
+        return "[RoomSignaling #".concat(this._instanceId, ": ").concat(this.localParticipant ? this.localParticipant.sid : 'null', "]");
     };
     /**
      * Connect {@link RemoteParticipantSignaling} to the {@link RoomSignaling}.

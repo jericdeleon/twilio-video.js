@@ -16,10 +16,14 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-var __spreadArray = (this && this.__spreadArray) || function (to, from) {
-    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
-        to[j] = from[i];
-    return to;
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
 var defaultGetLogger = require('../vendor/loglevel').getLogger;
 var constants = require('./constants');
@@ -78,7 +82,7 @@ var Log = /** @class */ (function () {
                 get: function get() {
                     var name = loggerName && typeof loggerName === 'string' ? loggerName : DEFAULT_LOGGER_NAME;
                     if (!this._logLevelsEqual) {
-                        name = name + "-" + moduleName;
+                        name = "".concat(name, "-").concat(moduleName);
                     }
                     return name;
                 }
@@ -164,7 +168,7 @@ var Log = /** @class */ (function () {
         }
         name = name.toLowerCase();
         var prefix = [new Date().toISOString(), name, this.name];
-        (this._logger[name] || function noop() { }).apply(void 0, __spreadArray([], __read(prefix.concat(messages))));
+        (this._logger[name] || function noop() { }).apply(void 0, __spreadArray([], __read(prefix.concat(messages)), false));
         return this;
     };
     /**

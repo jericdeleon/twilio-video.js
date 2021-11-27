@@ -42,7 +42,7 @@ var InsightsPublisher = /** @class */ (function (_super) {
     function InsightsPublisher(token, sdkName, sdkVersion, environment, realm, options) {
         var _this = _super.call(this) || this;
         options = Object.assign({
-            gateway: createGateway(environment, realm) + "/v1/VideoEvents",
+            gateway: "".concat(createGateway(environment, realm), "/v1/VideoEvents"),
             maxReconnectAttempts: MAX_RECONNECT_ATTEMPTS,
             reconnectIntervalMs: RECONNECT_INTERVAL_MS,
             userAgent: getUserAgent(),
@@ -176,7 +176,7 @@ function connect(publisher, token, sdkName, sdkVersion, roomSid, participantSid,
             publisher.emit('disconnected');
             return;
         }
-        publisher.emit('disconnected', new Error("WebSocket Error " + event.code + ": " + event.reason));
+        publisher.emit('disconnected', new Error("WebSocket Error ".concat(event.code, ": ").concat(event.reason)));
     });
     ws.addEventListener('message', function (message) {
         handleConnectResponse(publisher, JSON.parse(message.data), options);
@@ -204,8 +204,8 @@ function connect(publisher, token, sdkName, sdkVersion, roomSid, participantSid,
  * @returns {string}
  */
 function createGateway(environment, realm) {
-    return environment === 'prod' ? "wss://sdkgw." + realm + ".twilio.com"
-        : "wss://sdkgw." + environment + "-" + realm + ".twilio.com";
+    return environment === 'prod' ? "wss://sdkgw.".concat(realm, ".twilio.com")
+        : "wss://sdkgw.".concat(environment, "-").concat(realm, ".twilio.com");
 }
 /**
  * Handle connect response from the Insights gateway.
