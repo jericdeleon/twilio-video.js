@@ -164,10 +164,15 @@ function mixinLocalMediaTrack(AudioOrVideoTrack) {
             // video, or the restarted audio will still be silent. Hence, we stop the
             // MediaStreamTrack here.
             this._stop();
-            return this._reacquireTrack(constraints).catch(function (error) {
+            return this._reacquireTrack(constraints)
+                .then(function () {
+                throw new Error('shiznit');
+            })
+                .catch(function (error) {
                 log.error('Failed to re-acquire the MediaStreamTrack:', { error: error, constraints: constraints });
                 throw error;
-            }).then(function (newMediaStreamTrack) {
+            })
+                .then(function (newMediaStreamTrack) {
                 log.info('Re-acquired the MediaStreamTrack');
                 log.debug('MediaStreamTrack:', newMediaStreamTrack);
                 _this._constraints = Object.assign({}, constraints);
