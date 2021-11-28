@@ -305,6 +305,8 @@ function restartWhenInadvertentlyStopped(localMediaTrack) {
         });
     }
     function maybeRestart() {
+        // eslint-disable-next-line
+        console.warn('maybeRestart is running!');
         return Promise.race([
             waitForEvent(mediaStreamTrack, 'unmute'),
             waitForSometime(50)
