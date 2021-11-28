@@ -251,6 +251,12 @@ var LocalVideoTrack = /** @class */ (function (_super) {
         }
         return promise;
     };
+    LocalVideoTrack.prototype.mute = function () {
+        _super.prototype.mute.apply(this, arguments);
+    };
+    LocalVideoTrack.prototype.unmute = function () {
+        _super.prototype.unmute.apply(this, arguments);
+    };
     /**
      * Calls stop on the underlying MediaStreamTrack. If you choose to stop a
      * {@link LocalVideoTrack}, you should unpublish it after stopping.

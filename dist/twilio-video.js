@@ -2879,6 +2879,12 @@ var LocalAudioTrack = /** @class */ (function (_super) {
     LocalAudioTrack.prototype.restart = function () {
         return _super.prototype.restart.apply(this, arguments);
     };
+    LocalAudioTrack.prototype.mute = function () {
+        _super.prototype.mute.apply(this, arguments);
+    };
+    LocalAudioTrack.prototype.unmute = function () {
+        _super.prototype.unmute.apply(this, arguments);
+    };
     /**
      * Calls stop on the underlying MediaStreamTrack. If you choose to stop a
      * {@link LocalAudioTrack}, you should unpublish it after stopping.
@@ -3391,6 +3397,16 @@ function mixinLocalMediaTrack(AudioOrVideoTrack) {
             }
             return promise;
         };
+        LocalMediaTrack.prototype.mute = function () {
+            // eslint-disable-next-line
+            console.warn('trying to mute...');
+            this.mediaStreamTrack.enabled = false;
+        };
+        LocalMediaTrack.prototype.unmute = function () {
+            // eslint-disable-next-line
+            console.warn('trying to unmute...');
+            this.mediaStreamTrack.enabled = true;
+        };
         LocalMediaTrack.prototype.stop = function () {
             this._log.info('Stopping');
             if (this._workaroundWebKitBug1208516Cleanup) {
@@ -3873,6 +3889,12 @@ var LocalVideoTrack = /** @class */ (function (_super) {
             });
         }
         return promise;
+    };
+    LocalVideoTrack.prototype.mute = function () {
+        _super.prototype.mute.apply(this, arguments);
+    };
+    LocalVideoTrack.prototype.unmute = function () {
+        _super.prototype.unmute.apply(this, arguments);
     };
     /**
      * Calls stop on the underlying MediaStreamTrack. If you choose to stop a

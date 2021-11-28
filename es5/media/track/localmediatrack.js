@@ -242,6 +242,16 @@ function mixinLocalMediaTrack(AudioOrVideoTrack) {
             }
             return promise;
         };
+        LocalMediaTrack.prototype.mute = function () {
+            // eslint-disable-next-line
+            console.warn('trying to mute...');
+            this.mediaStreamTrack.enabled = false;
+        };
+        LocalMediaTrack.prototype.unmute = function () {
+            // eslint-disable-next-line
+            console.warn('trying to unmute...');
+            this.mediaStreamTrack.enabled = true;
+        };
         LocalMediaTrack.prototype.stop = function () {
             this._log.info('Stopping');
             if (this._workaroundWebKitBug1208516Cleanup) {

@@ -117,6 +117,12 @@ var LocalAudioTrack = /** @class */ (function (_super) {
     LocalAudioTrack.prototype.restart = function () {
         return _super.prototype.restart.apply(this, arguments);
     };
+    LocalAudioTrack.prototype.mute = function () {
+        _super.prototype.mute.apply(this, arguments);
+    };
+    LocalAudioTrack.prototype.unmute = function () {
+        _super.prototype.unmute.apply(this, arguments);
+    };
     /**
      * Calls stop on the underlying MediaStreamTrack. If you choose to stop a
      * {@link LocalAudioTrack}, you should unpublish it after stopping.
